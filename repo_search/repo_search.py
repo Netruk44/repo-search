@@ -1,3 +1,4 @@
+print("Loading libraries...")
 import openai
 import faiss
 import tqdm
@@ -7,11 +8,11 @@ def generate_embeddings_for_repository(
     repo_url_or_path,
     embeddings_dir,
     verbose):
-    pass
+    print('Generating embeddings for repository...')
 
 def query_embeddings(
     dataset_name,
     query,
     embeddings_dir,
     verbose):
-    pass
+    print('Querying embeddings...')
