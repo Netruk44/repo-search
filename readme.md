@@ -11,8 +11,8 @@ RepoSearch is a tool for searching through repositories of text and source code 
 > Cost per query is negligible, almost always less than 1/10th of a penny unless you're writing paragraphs of text.
 >
 > Generating embeddings:
-> * For the [OpenMW](https://www.gitlab.com) repository (generating embeddings for about ~9 MB worth of source files) costs about $0.20 USD.
-> * For the [Borg Backup](https://github.com/borgbackup/borg) repository (<5 MB of source) costs about $0.10 USD.
+> * For the [OpenMW](https://www.gitlab.com) repository (generating embeddings for ~9 MB worth of source files) costs ~$0.20 USD.
+> * For the [Borg Backup](https://github.com/borgbackup/borg) repository (<5 MB of source) costs ~$0.10 USD.
 
 ### Install
 
