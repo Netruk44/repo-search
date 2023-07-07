@@ -3,7 +3,7 @@
 
 RepoSearch is a tool for searching through repositories of text and source code using natural language queries, based on OpenAI's embeddings.
 
-> **Important**: **DO NOT** use this project with any sensitive code/data! The contents of all files will be sent to OpenAI's API for embedding generation. I can't guarantee that the contents of your files will be kept private.
+> **Warning**: **DO NOT** use this project with any sensitive code/data! The contents of all files will be sent to OpenAI's API for embedding generation. They may or may not be stored by OpenAI.
 
 > **Note**: Using this project requires you to supply your own OpenAI API key!
 >
