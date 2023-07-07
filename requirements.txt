@@ -1,3 +1,4 @@
 openai
 datasets
 faiss-cpu
+tiktoken

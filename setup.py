@@ -21,5 +21,6 @@ setup(
         'datasets',
         'faiss-cpu',
         'tqdm',
+        'tiktoken'
     ]
 )
