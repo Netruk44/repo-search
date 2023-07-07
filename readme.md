@@ -45,6 +45,7 @@ Querying embeddings...
 
 1. Clone the repository.
 2. Open a terminal in the repository directory.
+3. *[Optional]* Create a virtual/conda/whatever environment.
 3. `pip install -e .`
 4. `repo_search --help`
 
