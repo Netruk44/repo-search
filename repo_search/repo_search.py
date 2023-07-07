@@ -1,6 +1,6 @@
 print("Loading libraries...")
 import openai
-import faiss
+#import faiss
 import tqdm
 import os
 import sys
@@ -10,6 +10,7 @@ import tiktoken
 import datasets
 import time
 import numpy as np
+from io import BytesIO
 
 # Module constants
 
@@ -153,12 +154,16 @@ def generate_embeddings_for_remote_zip_archive(
     zip_url,
     embeddings_dir,
     verbose):
-    if verbose:
-        print(f'Downloading {download_url}...')
-
     # Use zipfile to browse the contents of the zip file without extracting it.
-    with urllib.request.urlopen(download_url) as response:
-        with zipfile.ZipFile(response) as zip_ref:
+    with BytesIO() as zip_buffer:
+        if verbose:
+            print(f'Downloading {zip_url}...')
+
+        with urllib.request.urlopen(zip_url) as response:
+            zip_buffer.write(response.read())
+            zip_buffer.seek(0)
+
+        with zipfile.ZipFile(zip_buffer) as zip_ref:
             generate_embeddings_for_zipfile(
                 dataset_name,
                 zip_ref,
@@ -197,9 +202,19 @@ def generate_embeddings_for_zipfile(
     # For each file in the zip file, generate embeddings for it.
     all_embeddings = []
     for file_path in tqdm.tqdm(file_list):
-        with zipfile.open(file_path) as file:
-            file_contents = file.read()
-            all_embeddings.append(generate_embeddings_for_contents(file_contents))
+        try:
+            with zipfile.open(file_path, 'r') as file:
+                file_contents = file.read()
+                file_contents = file_contents.decode('utf-8')
+                all_embeddings.append(generate_embeddings_for_contents(file_contents, verbose))
+        except UnicodeDecodeError as e:
+            if verbose:
+                print(f'WARNING: Could not read as text file: {file_path}')
+            all_embeddings.append([])
+        #except:
+        #    if verbose:
+        #        print(f'WARNING: Issue generating embeddings for: {file_path}')
+        #    all_embeddings.append([])
     
     # Generate a dataset from the embeddings.
     dataset = datasets.Dataset.from_dict({
