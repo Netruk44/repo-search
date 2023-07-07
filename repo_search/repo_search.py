@@ -9,6 +9,7 @@ import urllib.request
 import tiktoken
 import datasets
 import time
+import numpy as np
 
 # Module constants
 
@@ -73,6 +74,31 @@ def query_embeddings(
     verbose):
     print('Querying embeddings...')
 
+    query_embedding = generate_embedding_for_chunk(query, verbose)
+
+    # Load the dataset from disk.
+    dataset = datasets.load_from_disk(os.path.join(embeddings_dir, dataset_name))
+
+    # Load the index from disk.
+    # TODO
+
+    embeddings = dataset['embeddings']
+    similarities = []
+
+    for embedding_list in tqdm.tqdm(embeddings):
+        best_similarity = 0.0
+        for embedding in embedding_list:
+            similarity = cosine_similarity(query_embedding, embedding)
+            if similarity > best_similarity:
+                best_similarity = similarity
+        similarities.append(best_similarity)
+    
+    # Sort the similarities and file paths in descending order.
+    similarities, file_paths = zip(*sorted(zip(similarities, dataset['file_path']), reverse=True))
+
+    # Print the top 10 results.
+    for similarity, file_path in zip(similarities[:10], file_paths[:10]):
+        print(f'{similarity}: {file_path}')
 
 
 # Internal functions
@@ -297,3 +323,6 @@ def generate_faiss_index_for_dataset(
     embeddings_dir,
     verbose):
     pass
+
+def cosine_similarity(a, b):
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
