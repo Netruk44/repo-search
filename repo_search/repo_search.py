@@ -203,39 +203,37 @@ def generate_embeddings_for_local_repository(
     embeddings = []
     skipped_file_count = 0
 
-    progress = tqdm.tqdm(desc = 'Generating embeddings', unit = ' files')
-
     while len(dirs_left) > 0:
         next_dir = dirs_left.pop(0)
-        #progress.update(1)
 
         for root, dirs, files in os.walk(next_dir):
             for dir in dirs:
                 dirs_left.append(os.path.join(root, dir))
-                
-            progress.set_postfix({
-                'dirs_left': len(dirs_left),
-                #'total_files': len(file_paths),
-                'skipped_files': skipped_file_count
-            })
-
+            
             for file in files:
-                progress.update(1)
                 file_path = os.path.join(root, file)
-                try:
-                    with open(file_path, 'rt') as file:
-                        file_contents = file.read()
-                        embeddings = generate_embeddings_for_contents(file_contents)
-
-                        # When storing file_path, remove shared repo_path prefix.
-                        relative_file_path = file_path[len(repo_path):]
-                        
-                        file_paths.append(relative_file_path)
-                        embeddings.append(embeddings)
-                except UnicodeDecodeError as e:
-                    if verbose:
-                        print(f'WARNING: Could not read file: {file_path}')
-                    skipped_file_count += 1
+                
+                # When storing file_path, remove shared repo_path prefix.
+                relative_file_path = file_path[len(repo_path) + 1:]
+                file_paths.append(relative_file_path)
+    
+    for file_path in tqdm.tqdm(file_paths):
+        full_file_path = os.path.join(repo_path, file_path)
+        try:
+            with open(full_file_path, 'rt') as file:
+                file_contents = file.read()
+                embedding = generate_embeddings_for_contents(file_contents, verbose)
+                embeddings.append(embedding)
+        except UnicodeDecodeError as e:
+            if verbose:
+                print(f'WARNING: Could not read file: {full_file_path}')
+            skipped_file_count += 1
+            embeddings.append([])
+        except:
+            if verbose:
+                print(f'WARNING: Issue generating embeddings for: {full_file_path}')
+            skipped_file_count += 1
+            embeddings.append([])
     
     # Generate a dataset from the embeddings.
     dataset = datasets.Dataset.from_dict({
@@ -250,7 +248,8 @@ def generate_embeddings_for_local_repository(
     generate_faiss_index_for_dataset(dataset, dataset_name, embeddings_dir, verbose)
 
 def generate_embeddings_for_contents(
-    file_contents
+    file_contents,
+    verbose
 ):
     # Use tiktoken to split file_contents into chunks of OPENAI_MODEL_MAX_INPUT_TOKENS.
     encoding = tiktoken.get_encoding("cl100k_base")
@@ -261,19 +260,21 @@ def generate_embeddings_for_contents(
     for i in range(0, len(tokens), OPENAI_MODEL_MAX_INPUT_TOKENS):
         chunk = tokens[i:i + OPENAI_MODEL_MAX_INPUT_TOKENS]
         chunk = encoding.decode(chunk)
-        all_embeddings.append(generate_embedding_for_chunk(chunk))
+        all_embeddings.append(generate_embedding_for_chunk(chunk, verbose))
     
     #print(all_embeddings)
     return all_embeddings
 
 def generate_embedding_for_chunk_FAKE(
-    file_chunk
+    file_chunk,
+    verbose
 ):
     # Debug testing
     return [0.0] * 1536
 
 def generate_embedding_for_chunk(
-    file_chunk
+    file_chunk,
+    verbose,
 ):
     current_try = 0
     max_tries = 3
