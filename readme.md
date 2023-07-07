@@ -5,16 +5,19 @@ RepoSearch is a tool for searching through repositories of source code using nat
 
 > **Note**: Using this project requires you to supply your own OpenAI API key (set environment variable `OPENAI_API_KEY=sk-...`)
 >
-> **Costs**: Cost per query is negligible, almost always less than 1/10th of a penny unless you're writing paragraphs of text. Generating embeddings for the [OpenMW](https://www.gitlab.com) repository costs about $0.20 USD.
+> **Costs**: Cost per query is negligible, almost always less than 1/10th of a penny unless you're writing paragraphs of text. Generating embeddings for the [OpenMW](https://www.gitlab.com) repository (~9 MB worth of source files) costs about $0.20 USD.
 
 ### How does it work?
 For each file in the repository, a query is sent to the [OpenAI embeddings API](https://platform.openai.com/docs/api-reference/embeddings) to generate an embedding. If a file is too large for a single query, it is split into smaller chunks and each chunk is embedded separately.
 
-The retrieved embeddings are stored in a [HuggingFace Datasets](https://huggingface.co/docs/datasets/index) dataset, which can be used by code outside of this project. Check out [the schema](#dataset-schema) for more information about using the generated dataset.
+The retrieved embeddings are stored in a [HuggingFace Datasets](https://huggingface.co/docs/datasets/index) dataset. Check out [the schema](#dataset-schema) for more information about using the generated dataset.
 
-**TODO**: The embeddings are indexed using [FAISS](https://faiss.ai/), which allows for fast nearest neighbor searches to your queries.
+> **Possible TODO**: *The embeddings are indexed using [FAISS](https://faiss.ai/), which allows for fast nearest neighbor searches to your queries.*
 
 ### Example Usage
+
+#### Local Repository
+*Generating embeddings from a local copy of the OpenMW (open source game engine) repository, then querying it.*
 
 ```bash
 $ repo_search generate openmw ~/Developer/openmw/apps --verbose
@@ -24,8 +27,7 @@ WARNING: Could not read as text file: /Users/danielperry/Developer/openmw/apps/o
 WARNING: Could not read as text file: /Users/danielperry/Developer/openmw/apps/openmw_test_suite/toutf8/data/russian-win1251.txt
 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1386/1386 [05:53<00:00,  3.92it/s]
 
-$ ./repoSearch.sh query openmw "NPC navigation code and examples on making an NPC navigate towards a specific destination."
-
+$ repo_search query openmw "NPC navigation code and examples on making an NPC navigate towards a specific destination."
 Loading libraries...
 Querying embeddings...
 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1386/1386 [00:00<00:00, 3375.94it/s]
@@ -39,6 +41,39 @@ Querying embeddings...
 0.7529779124249095: openmw/mwmechanics/aipackage.cpp
 0.7527566874958713: openmw/mwworld/actionteleport.cpp
 0.7491856749386254: openmw/mwmechanics/pathfinding.cpp
+```
+
+#### Zip File Download
+
+*Downloading the latest state of the Borg Backup repository from GitHub, generating embeddings, then querying it.*
+
+```bash
+$ repo_search generate borg https://github.com/borgbackup/borg/archive/refs/heads/master.zip --verbose
+Loading libraries...
+Downloading https://github.com/borgbackup/borg/archive/refs/heads/master.zip...
+Generating embeddings from zipfile for borg...
+WARNING: Could not read as text file: borg-master/docs/_static/favicon.ico
+WARNING: Could not read as text file: borg-master/docs/_static/logo.pdf
+WARNING: Could not read as text file: borg-master/docs/_static/logo.png
+WARNING: Could not read as text file: borg-master/docs/internals/compaction.odg
+WARNING: Could not read as text file: borg-master/docs/internals/compaction.png
+...
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 425/425 [02:17<00:00,  3.09it/s]
+
+$ repo_search query borg "Code implementing file chunking and deduplication."
+Loading libraries...
+Querying embeddings...
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 425/425 [00:00<00:00, 3524.80it/s]
+0.7795432405745771: borg-master/scripts/fuzz-cache-sync/testcase_dir/test_simple
+0.776652925136563: borg-master/src/borg/chunker.pyx
+0.7625068003811171: borg-master/docs/usage/notes.rst
+0.7601486530920606: borg-master/docs/misc/internals-picture.txt
+0.7592314451132307: borg-master/src/borg/hashindex.pyi
+0.7587992123424291: borg-master/src/borg/chunker.pyi
+0.7545961178472722: borg-master/src/borg/testsuite/chunker.py
+0.748955970602009: borg-master/src/borg/_chunker.c
+0.7468354876619363: borg-master/src/borg/cache.py
+0.7418049390391546: borg-master/src/borg/_hashindex.c
 ```
 
 ### Usage
