@@ -3,9 +3,14 @@
 
 RepoSearch is a tool for searching through repositories of source code using natural language queries, based on OpenAI's embeddings.
 
-> **Note**: Using this project requires you to supply your own OpenAI API key (set environment variable `OPENAI_API_KEY=sk-...`)
+> **Note**: Using this project requires you to supply your own OpenAI API key!
 >
-> **Costs**: Cost per query is negligible, almost always less than 1/10th of a penny unless you're writing paragraphs of text. Generating embeddings for the [OpenMW](https://www.gitlab.com) repository (~9 MB worth of source files) costs about $0.20 USD.
+> **Cost**:
+> Cost per query is negligible, almost always less than 1/10th of a penny unless you're writing paragraphs of text.
+>
+> Generating embeddings:
+> * For the [OpenMW](https://www.gitlab.com) repository (generating embeddings for about ~9 MB worth of source files) costs about $0.20 USD.
+> * For the [Borg Backup](https://github.com/borgbackup/borg) repository (<5 MB of source) costs about $0.10 USD.
 
 ### How does it work?
 For each file in the repository, a query is sent to the [OpenAI embeddings API](https://platform.openai.com/docs/api-reference/embeddings) to generate an embedding. If a file is too large for a single query, it is split into smaller chunks and each chunk is embedded separately.
@@ -81,7 +86,8 @@ Querying embeddings...
 1. Clone the repository.
 2. Open a terminal in the repository directory.
 3. *[Optional]* Create a virtual/conda/whatever environment.
-3. `pip install -e .`
+4. `pip install -e .`
+5. Set your OpenAI API Key:`export OPENAI_API_KEY=sk-...`
 4. `repo_search --help`
 
 ### Dataset Schema
