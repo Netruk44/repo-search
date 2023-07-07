@@ -1,7 +1,7 @@
 ## RepoSearch
 ### Description
 
-RepoSearch is a tool for searching through repositories of source code using natural language queries, based on OpenAI's embeddings.
+RepoSearch is a tool for searching through repositories of text and source code using natural language queries, based on OpenAI's embeddings.
 
 > **Note**: Using this project requires you to supply your own OpenAI API key!
 >
