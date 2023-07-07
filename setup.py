@@ -19,7 +19,7 @@ setup(
         'openai',
         'click',
         'datasets',
-        'faiss-cpu',
+        #'faiss-cpu',
         'tqdm',
         'tiktoken'
     ]
