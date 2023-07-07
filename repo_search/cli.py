@@ -47,8 +47,8 @@ def query(
 
 
 def get_default_embeddings_dir():
-    # Return the 'embeddings' directory one folder up from where this file is located.
-    return os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'embeddings')
+    # Return the 'embeddings' directory in the same directory as this file.
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), 'embeddings')
 
 if __name__ == '__main__':
     main()
