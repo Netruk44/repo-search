@@ -313,7 +313,7 @@ def generate_embedding_for_chunk(
     verbose,
 ):
     current_try = 0
-    max_tries = 3
+    max_tries = 5
 
     while current_try <= max_tries:
         current_try += 1
@@ -326,6 +326,9 @@ def generate_embedding_for_chunk(
         except openai.error.OpenAIError as e:
             if verbose:
                 print(f'WARNING: OpenAI API error: {e}')
+            
+            if current_try == max_tries:
+                raise e
             
             # Exponential backoff
             time.sleep(2**current_try)
