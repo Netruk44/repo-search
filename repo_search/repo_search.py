@@ -96,6 +96,8 @@ def query_embeddings(
     similarities = []
 
     for embedding_list in tqdm.tqdm(embeddings):
+        # Each file may have more than one embedding
+        # Check them all to see which one is most similar to the query
         best_similarity = 0.0
         for embedding in embedding_list:
             similarity = cosine_similarity(query_embedding, embedding)
