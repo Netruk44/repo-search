@@ -203,6 +203,7 @@ def generate_embeddings_for_local_repository(
     embeddings = []
     skipped_file_count = 0
 
+    # Populate file_paths with all files in repo_path and its subdirectories.
     while len(dirs_left) > 0:
         next_dir = dirs_left.pop(0)
 
@@ -227,6 +228,7 @@ def generate_embeddings_for_local_repository(
                 relative_file_path = file_path[len(repo_path) + 1:]
                 file_paths.append(relative_file_path)
     
+    # Generate embeddings for each file in file_paths.
     for file_path in tqdm.tqdm(file_paths):
         full_file_path = os.path.join(repo_path, file_path)
         try:
@@ -267,7 +269,6 @@ def generate_embeddings_for_contents(
         chunk = encoding.decode(chunk)
         all_embeddings.append(generate_embedding_for_chunk(chunk, verbose))
     
-    #print(all_embeddings)
     return all_embeddings
 
 def generate_embedding_for_chunk_FAKE(
