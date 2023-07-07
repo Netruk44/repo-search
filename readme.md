@@ -12,6 +12,14 @@ RepoSearch is a tool for searching through repositories of source code using nat
 > * For the [OpenMW](https://www.gitlab.com) repository (generating embeddings for about ~9 MB worth of source files) costs about $0.20 USD.
 > * For the [Borg Backup](https://github.com/borgbackup/borg) repository (<5 MB of source) costs about $0.10 USD.
 
+### Install
+
+1. Open a terminal.
+2. *[Optional]* Create a virtual/conda/whatever environment.
+3. `pip install git+https://github.com/Netruk44/repo-search`
+4. `export OPENAI_API_KEY=sk-...`
+5. `repo_search --help`
+
 ### How does it work?
 For each file in the repository, a query is sent to the [OpenAI embeddings API](https://platform.openai.com/docs/api-reference/embeddings) to generate an embedding. If a file is too large for a single query, it is split into smaller chunks and each chunk is embedded separately.
 
@@ -80,15 +88,6 @@ Querying embeddings...
 0.7468354876619363: borg-master/src/borg/cache.py
 0.7418049390391546: borg-master/src/borg/_hashindex.c
 ```
-
-### Usage
-
-1. Clone the repository.
-2. Open a terminal in the repository directory.
-3. *[Optional]* Create a virtual/conda/whatever environment.
-4. `pip install -e .`
-5. Set your OpenAI API Key:`export OPENAI_API_KEY=sk-...`
-4. `repo_search --help`
 
 ### Dataset Schema
 The generated dataset consists of just two columns.
