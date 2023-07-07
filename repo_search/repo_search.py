@@ -201,7 +201,6 @@ def generate_embeddings_for_local_repository(
 
     file_paths = []
     embeddings = []
-    skipped_file_count = 0
 
     # Populate file_paths with all files in repo_path and its subdirectories.
     while len(dirs_left) > 0:
@@ -221,7 +220,6 @@ def generate_embeddings_for_local_repository(
                 except UnicodeDecodeError as e:
                     if verbose:
                         print(f'WARNING: Could not read as text file: {file_path}')
-                    skipped_file_count += 1
                     continue
                 
                 # When storing file_path, remove shared repo_path prefix.
@@ -239,7 +237,6 @@ def generate_embeddings_for_local_repository(
         except:
             if verbose:
                 print(f'WARNING: Issue generating embeddings for: {full_file_path}')
-            skipped_file_count += 1
             embeddings.append([])
     
     # Generate a dataset from the embeddings.
