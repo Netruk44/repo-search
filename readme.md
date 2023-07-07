@@ -5,7 +5,7 @@ RepoSearch is a tool for searching through repositories of source code using nat
 
 > **Note**: Using this project requires you to supply your own OpenAI API key (set environment variable `OPENAI_API_KEY=sk-...`)
 >
-> **Costs**: Cost per query is negligible, almost always less than 1/10th of a penny unless you're writing paragraphs of text. Generating embeddings for the [OpenMW](https://www.gitlab.com) repository costs about ***TODO** USD.
+> **Costs**: Cost per query is negligible, almost always less than 1/10th of a penny unless you're writing paragraphs of text. Generating embeddings for the [OpenMW](https://www.gitlab.com) repository costs about $0.20 USD.
 
 ### How does it work?
 For each file in the repository, a query is sent to the [OpenAI embeddings API](https://platform.openai.com/docs/api-reference/embeddings) to generate an embedding. If a file is too large for a single query, it is split into smaller chunks and each chunk is embedded separately.
@@ -17,10 +17,28 @@ The embeddings are indexed using [FAISS](https://faiss.ai/), which allows for fa
 ### Example Usage
 
 ```bash
-$ ./repoSearch.sh generate openmw https://gitlab.com/OpenMW/openmw
-$ ./repoSearch.sh query openmw "How do I make an NPC navigate to a destination?"
+$ ./repoSearch.sh generate openmw repo_search generate openmw ~/Developer/openmw/apps --verbose
+Loading libraries...
+Generating embeddings from local directory /Users/danielperry/Developer/openmw/apps for openmw...
+WARNING: Could not read as text file: /Users/danielperry/Developer/openmw/apps/openmw_test_suite/toutf8/data/french-win1252.txt
+WARNING: Could not read as text file: /Users/danielperry/Developer/openmw/apps/openmw_test_suite/toutf8/data/russian-win1251.txt
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1386/1386 [05:53<00:00,  3.92it/s]
 
-***TODO: Actual output from program***
+$ ./repoSearch.sh query openmw "NPC navigation code and examples on making an NPC navigate towards a specific destination."
+
+Loading libraries...
+Querying embeddings...
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1386/1386 [00:00<00:00, 3375.94it/s]
+0.7708185244777552: openmw/mwmechanics/aiwander.cpp
+0.7648722322559: openmw/mwmechanics/obstacle.cpp
+0.7593991785701977: openmw/mwmechanics/aipursue.cpp
+0.7570192805465497: openmw/mwmechanics/aiescort.cpp
+0.7540042527421098: openmw/mwmechanics/aiescort.hpp
+0.7534971127334509: openmw/mwmechanics/aitravel.cpp
+0.7531876754013663: openmw/mwmechanics/aiface.cpp
+0.7529779124249095: openmw/mwmechanics/aipackage.cpp
+0.7527566874958713: openmw/mwworld/actionteleport.cpp
+0.7491856749386254: openmw/mwmechanics/pathfinding.cpp
 ```
 
 ### Usage
