@@ -17,7 +17,7 @@ from io import BytesIO
 # Map from url to what we need to append to get the zip file
 supported_remote_repositories = {
     'https://github.com': "/archive/refs/heads/main.zip",
-    'https://gitlab.com': "/-/archive/main/main.zip",
+    #'https://gitlab.com': "/-/archive/main/REPONAME-main.zip", # Missing repository name, which would be difficult to get into here.
     'https://bitbucket.org': "/get/main.zip",
 }
 
@@ -28,6 +28,8 @@ openai.api_key = os.environ.get("OPENAI_API_KEY")
 OPENAI_MODEL = 'text-embedding-ada-002'
 
 OPENAI_MODEL_MAX_INPUT_TOKENS = 8191
+
+openai_encoder = tiktoken.get_encoding("cl100k_base")
 
 # Exported functions
 
@@ -73,6 +75,13 @@ def query_embeddings(
     query,
     embeddings_dir,
     verbose):
+    if not dataset_exists(dataset_name, embeddings_dir):
+        # To help the user, give the full disk path to the embeddings directory
+        embeddings_dir_expanded = os.path.abspath(embeddings_dir)
+
+        print(f'Dataset named {dataset_name} does not exist in embeddings directory ({embeddings_dir_expanded}), generate it first.')
+        return
+    
     print('Querying embeddings...')
 
     query_embedding = generate_embedding_for_chunk(query, verbose)
@@ -289,8 +298,7 @@ def generate_embeddings_for_contents(
     verbose
 ):
     # Use tiktoken to split file_contents into chunks of OPENAI_MODEL_MAX_INPUT_TOKENS.
-    encoding = tiktoken.get_encoding("cl100k_base")
-    tokens = encoding.encode(file_contents)
+    tokens = openai_encoder.encode(file_contents)
 
     # Split tokens into chunks of OPENAI_MODEL_MAX_INPUT_TOKENS.
     all_embeddings = []
@@ -312,6 +320,8 @@ def generate_embedding_for_chunk(
     file_chunk,
     verbose,
 ):
+    assert len(openai_encoder.encode(file_chunk)) <= OPENAI_MODEL_MAX_INPUT_TOKENS
+
     current_try = 0
     max_tries = 5
 
