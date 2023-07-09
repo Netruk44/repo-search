@@ -51,7 +51,7 @@ def query(
 
     show_func = show_str_to_function(show)
 
-    for similarity, file_path in query_embeddings(dataset_name, query, show_func, embeddings_dir, verbose):
+    for similarity, file_path in show_func(*query_embeddings(dataset_name, query, embeddings_dir, verbose)):
         similarity *= 100
         print(f'{similarity:.2f}%\t{file_path}')
 

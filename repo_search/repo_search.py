@@ -73,7 +73,6 @@ def generate_embeddings_for_repository(
 def query_embeddings(
     dataset_name,
     query,
-    order_and_slice_function,
     embeddings_dir,
     verbose):
     if not dataset_exists(dataset_name, embeddings_dir):
@@ -106,8 +105,8 @@ def query_embeddings(
                 best_similarity = similarity
         similarities.append(best_similarity)
 
-    # Apply the requested ordering and slicing.
-    return order_and_slice_function(similarities, dataset['file_path'])
+    # Return the results
+    return similarities, dataset['file_path']
 
 
 # Internal functions
