@@ -32,7 +32,7 @@ def generate(
 @main.command(help = 'Query a dataset using natural language.')
 @click.argument('dataset_name')
 @click.argument('query')
-@click.option('--show', '-s', default = 't10', help = 'Which results to show. Prefix t for top, b for bottom. Suffix with %% to show a percentage of results.')
+@click.option('--show', '-s', default = 't10', help = 'Which results to show. Prefix t for top, b for bottom. Suffix with % to show a percentage of results.')
 @click.option('--embeddings_dir', '-d', default = None, help = 'Directory containing the embeddings for the dataset.')
 @click.option('--verbose', '-v', is_flag = True, help = 'Print verbose output.')
 def query(
