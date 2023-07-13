@@ -87,11 +87,11 @@ def query_embeddings(
     embeddings = dataset['embeddings']
     similarities = []
 
-    for embedding_list in tqdm.tqdm(embeddings):
+    for all_embeddings_for_document in tqdm.tqdm(embeddings):
         # Each file may have more than one embedding
         # Check them all to see which one is most similar to the query
         best_similarity = 0.0
-        for embedding in embedding_list:
+        for embedding in all_embeddings_for_document:
             similarity = cosine_similarity(query_embedding, embedding)
             if similarity > best_similarity:
                 best_similarity = similarity
@@ -200,7 +200,9 @@ def generate_embeddings_for_zipfile(
 
     # For each file in the zip file, generate embeddings for it.
     all_embeddings = []
-    for file_path in tqdm.tqdm(file_list):
+    bar = tqdm.tqdm(file_list, smoothing=0.05)
+    for file_path in bar:
+        bar.set_description(file_path)
         try:
             with zipfile.open(file_path, 'r') as file:
                 file_contents = file.read()
@@ -263,7 +265,7 @@ def generate_embeddings_for_local_repository(
             file_paths.append(relative_file_path)
     
     # Generate embeddings for each file in file_paths.
-    bar = tqdm.tqdm(file_paths)
+    bar = tqdm.tqdm(file_paths, smoothing=0.05)
     for file_path in bar:
         full_file_path = os.path.join(repo_path, file_path)
         bar.set_description(full_file_path)
