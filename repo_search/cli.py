@@ -10,11 +10,15 @@ def main():
 @main.command(help = 'Generate a new embeddings dataset for a given repository.')
 @click.argument('dataset_name')
 @click.argument('repo_url_or_path')
+@click.option('--model_type', '-m', default = 'instructor', help = 'Which model to use for generating the embeddings. Options: instructor, openai')
+@click.option('--model_name', '-n', default = None, help = 'Which model to use for generating the embeddings. Options available depend on the model type.')
 @click.option('--embeddings_dir', '-d', default = None, help = 'Output directory for the generated embeddings.')
 @click.option('--verbose', '-v', is_flag = True, help = 'Print verbose output.')
 def generate(
     dataset_name,
-    repo_url_or_path, 
+    repo_url_or_path,
+    model_type,
+    model_name,
     embeddings_dir, 
     verbose):
 
@@ -23,19 +27,23 @@ def generate(
     if embeddings_dir is None:
         embeddings_dir = get_default_embeddings_dir()
 
-    generate_embeddings_for_repository(dataset_name, repo_url_or_path, embeddings_dir, verbose)
+    generate_embeddings_for_repository(dataset_name, repo_url_or_path, embeddings_dir, model_type, model_name, verbose)
 
 # 'query' command, queries a dataset for a given query.
 # Takes in a dataset name and a query string.
 @main.command(help = 'Query a dataset using natural language.')
 @click.argument('dataset_name')
 @click.argument('query')
+@click.option('--model_type', '-m', default = 'instructor', help = 'Which model was used to generate the embeddings. Options: instructor, openai')
+@click.option('--model_name', '-n', default = None, help = 'Which model was used to generate the embeddings. Options available depend on the model type.')
 @click.option('--show', '-s', default = 't10', help = 'Which results to show. Prefix t for top, b for bottom. Suffix with % to show a percentage of results. t10=top 10, b5%=bottom 5%')
 @click.option('--embeddings_dir', '-d', default = None, help = 'Directory containing the embeddings for the dataset.')
 @click.option('--verbose', '-v', is_flag = True, help = 'Print verbose output.')
 def query(
     dataset_name,
     query,
+    model_type,
+    model_name,
     show,
     embeddings_dir,
     verbose):
@@ -47,7 +55,7 @@ def query(
 
     show_func = show_str_to_function(show)
 
-    for similarity, file_path in show_func(*query_embeddings(dataset_name, query, embeddings_dir, verbose)):
+    for similarity, file_path in show_func(*query_embeddings(dataset_name, query, embeddings_dir, model_type, model_name, verbose)):
         similarity *= 100
         print(f'{similarity:.2f}%\t{file_path}')
 

@@ -19,17 +19,14 @@ supported_remote_repositories = {
     'https://bitbucket.org': "/get/main.zip",
 }
 
-# TODO: Add to CLI
-#embedding_model = OpenAIModel()
-embedding_model = InstructorModel()
-
 # Exported functions
-
 def generate_embeddings_for_repository(
     dataset_name,
     repo_url_or_path,
     embeddings_dir,
-    verbose):
+    model_type = 'instructor',
+    model_name = 'hkunlp/instructor-large',
+    verbose = False):
     if dataset_exists(dataset_name, embeddings_dir):
         # To help the user, give the full disk path to the embeddings directory
         embeddings_dir_expanded = os.path.abspath(embeddings_dir)
@@ -37,13 +34,16 @@ def generate_embeddings_for_repository(
         print(f'Dataset named {dataset_name} already exists in embeddings directory ({embeddings_dir_expanded}), delete it first if you want to regenerate it.')
         return
     
+    print("Loading model...")
+    embedding_model = create_embedding_model(model_type, model_name)
+    
     # Check if given repository is a URL or a local path
     if repo_url_or_path.startswith('http'):
         # Remote repositories
         if repo_url_or_path.endswith('.zip'):
-            generate_embeddings_for_remote_zip_archive(dataset_name, repo_url_or_path, embeddings_dir, verbose)
+            generate_embeddings_for_remote_zip_archive(dataset_name, repo_url_or_path, embeddings_dir, embedding_model, verbose)
         elif is_supported_remote_repository(repo_url_or_path):
-            generate_embeddings_for_remote_repository_archive(dataset_name, repo_url_or_path, embeddings_dir, verbose)
+            generate_embeddings_for_remote_repository_archive(dataset_name, repo_url_or_path, embeddings_dir, embedding_model, verbose)
         else:
             print(f'ERROR: Unsupported remote repository: {repo_url_or_path}')
             return
@@ -53,9 +53,9 @@ def generate_embeddings_for_repository(
             repo_url_or_path = os.path.expanduser(repo_url_or_path)
         
         if os.path.isdir(repo_url_or_path):
-            generate_embeddings_for_local_repository(dataset_name, repo_url_or_path, embeddings_dir, verbose)
+            generate_embeddings_for_local_repository(dataset_name, repo_url_or_path, embeddings_dir, embedding_model, verbose)
         elif repo_url_or_path.endswith('.zip'):
-            generate_embeddings_for_local_zip_archive(dataset_name, repo_url_or_path, embeddings_dir, verbose)
+            generate_embeddings_for_local_zip_archive(dataset_name, repo_url_or_path, embeddings_dir, embedding_model, verbose)
         else:
             print(f'ERROR: Unsupported local repository: {repo_url_or_path}')
             return
@@ -66,7 +66,9 @@ def query_embeddings(
     dataset_name,
     query,
     embeddings_dir,
-    verbose):
+    model_type = 'instructor',
+    model_name = 'hkunlp/instructor-large',
+    verbose = False):
     if not dataset_exists(dataset_name, embeddings_dir):
         # To help the user, give the full disk path to the embeddings directory
         embeddings_dir_expanded = os.path.abspath(embeddings_dir)
@@ -74,8 +76,10 @@ def query_embeddings(
         print(f'Dataset named {dataset_name} does not exist in embeddings directory ({embeddings_dir_expanded}), generate it first.')
         return
     
+    print("Loading model...")
+    embedding_model = create_embedding_model(model_type, model_name)
+    
     print('Querying embeddings...')
-
     query_embedding = embedding_model.generate_embedding_for_query(query, verbose)
 
     # Load the dataset from disk.
@@ -102,6 +106,14 @@ def query_embeddings(
 
 
 # Internal functions
+def create_embedding_model(model_type, model_name):
+    if model_type == 'openai':
+        return OpenAIModel(model_name)
+    elif model_type == 'instructor':
+        return InstructorModel(model_name)
+    else:
+        raise ValueError(f'Unsupported model type: {model_type}')
+
 def dataset_exists(dataset_name, embeddings_dir):
     # Check if folder named dataset_name exists in embeddings_dir.
     return os.path.exists(os.path.join(embeddings_dir, dataset_name))
@@ -126,6 +138,7 @@ def generate_embeddings_for_remote_repository_archive(
     dataset_name,
     repo_url,
     embeddings_dir,
+    embedding_model,
     verbose):
     assert is_supported_remote_repository(repo_url)
 
@@ -144,6 +157,7 @@ def generate_embeddings_for_remote_repository_archive(
         dataset_name,
         download_url,
         embeddings_dir,
+        embedding_model,
         verbose
     )
 
@@ -152,6 +166,7 @@ def generate_embeddings_for_remote_zip_archive(
     dataset_name,
     zip_url,
     embeddings_dir,
+    embedding_model,
     verbose):
     # Use zipfile to browse the contents of the zip file without extracting it.
     with BytesIO() as zip_buffer:
@@ -167,6 +182,7 @@ def generate_embeddings_for_remote_zip_archive(
                 dataset_name,
                 zip_ref,
                 embeddings_dir,
+                embedding_model,
                 verbose
             )
 
@@ -174,6 +190,7 @@ def generate_embeddings_for_local_zip_archive(
     dataset_name,
     zip_path,
     embeddings_dir,
+    embedding_model,
     verbose):
     if verbose:
         print(f'Loading {zip_path}...')
@@ -184,6 +201,7 @@ def generate_embeddings_for_local_zip_archive(
             dataset_name,
             zip_ref,
             embeddings_dir,
+            embedding_model,
             verbose
         )
 
@@ -191,6 +209,7 @@ def generate_embeddings_for_zipfile(
     dataset_name,
     zipfile,
     embeddings_dir,
+    embedding_model,
     verbose):
 
     if verbose:
@@ -207,7 +226,7 @@ def generate_embeddings_for_zipfile(
             with zipfile.open(file_path, 'r') as file:
                 file_contents = file.read()
                 file_contents = file_contents.decode('utf-8')
-                all_embeddings.append(generate_embeddings_for_contents(file_contents, verbose))
+                all_embeddings.append(generate_embeddings_for_contents(file_contents, embedding_model, verbose))
         except UnicodeDecodeError as e:
             if verbose:
                 print(f'WARNING: Could not read as text file: {file_path}')
@@ -234,6 +253,7 @@ def generate_embeddings_for_local_repository(
     dataset_name,
     repo_path,
     embeddings_dir,
+    embedding_model,
     verbose):
 
     if verbose:
@@ -273,7 +293,7 @@ def generate_embeddings_for_local_repository(
         #try:
         with open(full_file_path, 'rt') as file:
             file_contents = file.read()
-            embedding = generate_embeddings_for_contents(file_contents, verbose)
+            embedding = generate_embeddings_for_contents(file_contents, embedding_model, verbose)
             embeddings.append(embedding)
         #except:
         #    if verbose:
@@ -294,6 +314,7 @@ def generate_embeddings_for_local_repository(
 
 def generate_embeddings_for_contents(
     file_contents,
+    embedding_model,
     verbose
 ):
     # Use tiktoken to split file_contents into chunks of OPENAI_MODEL_MAX_INPUT_TOKENS.
