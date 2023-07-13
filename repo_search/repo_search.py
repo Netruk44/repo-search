@@ -1,16 +1,14 @@
 print("Loading libraries...")
-import openai
 #import faiss
 import tqdm
 import os
-import sys
 import zipfile
 import urllib.request
-import tiktoken
 import datasets
-import time
 import numpy as np
 from io import BytesIO
+
+from .model_types import OpenAIModel
 
 # Module constants
 
@@ -21,15 +19,8 @@ supported_remote_repositories = {
     'https://bitbucket.org': "/get/main.zip",
 }
 
-# OpenAI API key
-#OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-openai.api_key = os.environ.get("OPENAI_API_KEY")
-
-OPENAI_MODEL = 'text-embedding-ada-002'
-
-OPENAI_MODEL_MAX_INPUT_TOKENS = 8191
-
-openai_encoder = tiktoken.get_encoding("cl100k_base")
+# TODO: Add to CLI
+embedding_model = OpenAIModel()
 
 # Exported functions
 
@@ -84,7 +75,7 @@ def query_embeddings(
     
     print('Querying embeddings...')
 
-    query_embedding = generate_embedding_for_chunk(query, verbose)
+    query_embedding = embedding_model.generate_embedding_for_chunk(query, verbose)
 
     # Load the dataset from disk.
     dataset = datasets.load_from_disk(os.path.join(embeddings_dir, dataset_name))
@@ -296,52 +287,17 @@ def generate_embeddings_for_contents(
     verbose
 ):
     # Use tiktoken to split file_contents into chunks of OPENAI_MODEL_MAX_INPUT_TOKENS.
-    tokens = openai_encoder.encode(file_contents)
+    tokens = embedding_model.encode(file_contents)
+    max_chunk_length = embedding_model.get_max_chunk_length()
 
     # Split tokens into chunks of OPENAI_MODEL_MAX_INPUT_TOKENS.
     all_embeddings = []
-    for i in range(0, len(tokens), OPENAI_MODEL_MAX_INPUT_TOKENS):
-        chunk = tokens[i:i + OPENAI_MODEL_MAX_INPUT_TOKENS]
-        chunk = encoding.decode(chunk)
-        all_embeddings.append(generate_embedding_for_chunk(chunk, verbose))
+    for i in range(0, len(tokens), max_chunk_length):
+        chunk = tokens[i:i + max_chunk_length]
+        chunk = embedding_model.decode(chunk)
+        all_embeddings.append(embedding_model.generate_embedding_for_chunk(chunk, verbose))
     
     return all_embeddings
-
-def generate_embedding_for_chunk_FAKE(
-    file_chunk,
-    verbose
-):
-    # Debug testing
-    return [0.0] * 1536
-
-def generate_embedding_for_chunk(
-    file_chunk,
-    verbose,
-):
-    assert len(openai_encoder.encode(file_chunk)) <= OPENAI_MODEL_MAX_INPUT_TOKENS
-
-    current_try = 0
-    max_tries = 5
-
-    while current_try <= max_tries:
-        current_try += 1
-        try:
-            embedding_response = openai.Embedding.create(
-                input=file_chunk,
-                model=OPENAI_MODEL,
-            )
-            break
-        except openai.error.OpenAIError as e:
-            if verbose:
-                print(f'WARNING: OpenAI API error: {e}')
-            
-            if current_try == max_tries:
-                raise e
-            
-            # Exponential backoff
-            time.sleep(2**current_try)
-
-    return embedding_response['data'][0]['embedding']
 
 def generate_faiss_index_for_dataset(
     dataset,
