@@ -18,8 +18,6 @@ def generate(
     embeddings_dir, 
     verbose):
 
-    assert os.environ.get('OPENAI_API_KEY'), 'OPENAI_API_TOKEN environment variable must be set.'
-
     from repo_search import generate_embeddings_for_repository
 
     if embeddings_dir is None:
@@ -41,8 +39,6 @@ def query(
     show,
     embeddings_dir,
     verbose):
-
-    assert os.environ.get('OPENAI_API_KEY'), 'OPENAI_API_TOKEN environment variable must be set.'
 
     from repo_search import query_embeddings
 
