@@ -23,13 +23,13 @@ class InstructorModel(ModelType):
         print("INFO: You may see warnings about sequence length being too long. These can be safely ignored.")
     
     def generate_embedding_for_document(self, chunk: str, verbose: bool = False) -> List[float]:
-        return self.generate_embedding_with_instruction([self.embedding_instruction, chunk], verbose)
+        return self.generate_embedding_with_instruction([[self.embedding_instruction, chunk]], verbose)
 
     def generate_embedding_for_query(self, chunk: str, verbose: bool = False) -> List[float]:
-        return self.generate_embedding_with_instruction([self.retrieval_instruction, chunk], verbose)
+        return self.generate_embedding_with_instruction([[self.retrieval_instruction, chunk]], verbose)
     
     def generate_embedding_with_instruction(self, chunk: List[str], verbose: bool = False) -> List[float]:
-        return self.model.encode(chunk, verbose)
+        return self.model.encode(chunk)[0]
 
     def get_max_document_chunk_length(self) -> int:
         embed_document_instruction_length = len(self.tokenize(self.embedding_instruction))
