@@ -16,11 +16,21 @@ setup(
     author_email = 'python@danieltperry.me',
     url = 'https://github.com/netruk44/repo-search',
     install_requires = [
-        'openai',
         'click',
         'datasets',
         #'faiss-cpu',
         'tqdm',
-        'tiktoken'
+        'torch',
+
+        # Open AI Models
+        'openai',
+        'tiktoken',
+
+        # Huggingface Generic
+        'transformers',
+
+        # Instructor
+        'sentence-transformers',
+        'InstructorEmbedding'
     ]
 )

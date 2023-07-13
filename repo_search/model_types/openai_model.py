@@ -23,6 +23,12 @@ class OpenAIModel(ModelType):
         self.encoder_name = encoder_name if encoder_name is not None else 'cl100k_base'
         self.encoder = tiktoken.get_encoding(self.encoder_name)
 
+    def generate_embedding_for_document(self, chunk: str, verbose: bool = False) -> List[float]:
+        return self.generate_embedding_for_chunk(chunk, verbose)
+
+    def generate_embedding_for_query(self, chunk: str, verbose: bool = False) -> List[float]:
+        return self.generate_embedding_for_chunk(chunk, verbose)
+
     def generate_embedding_for_chunk(self, chunk: str, verbose: bool = False) -> List[float]:
         encoded_chunk = self.encoder.encode(chunk)
         assert len(encoded_chunk) <= self.max_chunk_length, f'Chunk length {len(chunk)} exceeds max chunk length {self.max_chunk_length}.'
@@ -52,11 +58,14 @@ class OpenAIModel(ModelType):
         
         return embedding_response['data'][0]['embedding']
     
-    def get_max_chunk_length(self) -> int:
+    def get_max_document_chunk_length(self) -> int:
         return self.max_chunk_length
     
-    def encode(self, text: str) -> List[int]:
+    def get_max_query_chunk_length(self) -> int:
+        return self.max_chunk_length
+    
+    def tokenize(self, text: str) -> List[int]:
         return self.encoder.encode(text)
     
-    def decode(self, tokens: List[int]) -> str:
+    def detokenize(self, tokens: List[int]) -> str:
         return self.encoder.decode(tokens)

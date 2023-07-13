@@ -8,7 +8,7 @@ import datasets
 import numpy as np
 from io import BytesIO
 
-from .model_types import OpenAIModel
+from .model_types import OpenAIModel, InstructorModel
 
 # Module constants
 
@@ -20,7 +20,8 @@ supported_remote_repositories = {
 }
 
 # TODO: Add to CLI
-embedding_model = OpenAIModel()
+#embedding_model = OpenAIModel()
+embedding_model = InstructorModel()
 
 # Exported functions
 
@@ -75,7 +76,7 @@ def query_embeddings(
     
     print('Querying embeddings...')
 
-    query_embedding = embedding_model.generate_embedding_for_chunk(query, verbose)
+    query_embedding = embedding_model.generate_embedding_for_query(query, verbose)
 
     # Load the dataset from disk.
     dataset = datasets.load_from_disk(os.path.join(embeddings_dir, dataset_name))
@@ -260,15 +261,15 @@ def generate_embeddings_for_local_repository(
     # Generate embeddings for each file in file_paths.
     for file_path in tqdm.tqdm(file_paths):
         full_file_path = os.path.join(repo_path, file_path)
-        try:
-            with open(full_file_path, 'rt') as file:
-                file_contents = file.read()
-                embedding = generate_embeddings_for_contents(file_contents, verbose)
-                embeddings.append(embedding)
-        except:
-            if verbose:
-                print(f'WARNING: Issue generating embeddings for: {full_file_path}')
-            embeddings.append([])
+        #try:
+        with open(full_file_path, 'rt') as file:
+            file_contents = file.read()
+            embedding = generate_embeddings_for_contents(file_contents, verbose)
+            embeddings.append(embedding)
+        #except:
+        #    if verbose:
+        #        print(f'WARNING: Issue generating embeddings for: {full_file_path}')
+        #    embeddings.append([])
     
     # Generate a dataset from the embeddings.
     dataset = datasets.Dataset.from_dict({
@@ -287,15 +288,23 @@ def generate_embeddings_for_contents(
     verbose
 ):
     # Use tiktoken to split file_contents into chunks of OPENAI_MODEL_MAX_INPUT_TOKENS.
-    tokens = embedding_model.encode(file_contents)
-    max_chunk_length = embedding_model.get_max_chunk_length()
+    tokens = embedding_model.tokenize(file_contents)
+    max_chunk_length = embedding_model.get_max_document_chunk_length()
+
+    should_print = verbose and len(tokens) > max_chunk_length
 
     # Split tokens into chunks of OPENAI_MODEL_MAX_INPUT_TOKENS.
     all_embeddings = []
     for i in range(0, len(tokens), max_chunk_length):
+        if should_print:
+            print(f'Generating embeddings for index {i} to {i + max_chunk_length}...')
+
         chunk = tokens[i:i + max_chunk_length]
-        chunk = embedding_model.decode(chunk)
-        all_embeddings.append(embedding_model.generate_embedding_for_chunk(chunk, verbose))
+        chunk = embedding_model.detokenize(chunk)
+        
+        if should_print:
+            print(f'Chunk token length: {min(max_chunk_length, len(tokens) - i)} | Chunk string length: {len(chunk)} | Max chunk length: {max_chunk_length}')
+        all_embeddings.append(embedding_model.generate_embedding_for_document(chunk, verbose))
     
     return all_embeddings
 
