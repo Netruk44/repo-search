@@ -73,60 +73,59 @@ The retrieved embeddings are stored in a [HuggingFace Datasets](https://huggingf
 *Generating embeddings from a local copy of the OpenMW (open source game engine) repository, then querying it.*
 
 ```bash
-$ repo_search generate openmw ~/Developer/openmw/apps --verbose
+$ repo_search generate openmw ~/Developer/openmw/apps
 Loading libraries...
-Generating embeddings from local directory /Users/danielperry/Developer/openmw/apps for openmw...
-WARNING: Could not read as text file: /Users/danielperry/Developer/openmw/apps/openmw_test_suite/toutf8/data/french-win1252.txt
-WARNING: Could not read as text file: /Users/danielperry/Developer/openmw/apps/openmw_test_suite/toutf8/data/russian-win1251.txt
-100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1386/1386 [05:53<00:00,  3.92it/s]
+Loading model...
+load INSTRUCTOR_Transformer
+max_seq_length  512
+INFO: You may see warnings about sequence length being too long. These can be safely ignored.
+openmw_test_suite/testing_util.hpp:   0%|                              | 1/1386 [00:02<1:01:49,  2.63s/it]
+Token indices sequence length is longer than the specified maximum sequence length for this model (1030 > 512). Running this sequence through the model will result in indexing errors
+100%|██████████████████████████████| 1386/1386 [05:53<00:00,  3.92it/s]
 
 $ repo_search query openmw "NPC navigation code and examples on making an NPC navigate towards a specific destination."
 Loading libraries...
 Querying embeddings...
-100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1386/1386 [00:00<00:00, 3375.94it/s]
-0.7708185244777552: openmw/mwmechanics/aiwander.cpp
-0.7648722322559: openmw/mwmechanics/obstacle.cpp
-0.7593991785701977: openmw/mwmechanics/aipursue.cpp
-0.7570192805465497: openmw/mwmechanics/aiescort.cpp
-0.7540042527421098: openmw/mwmechanics/aiescort.hpp
-0.7534971127334509: openmw/mwmechanics/aitravel.cpp
-0.7531876754013663: openmw/mwmechanics/aiface.cpp
-0.7529779124249095: openmw/mwmechanics/aipackage.cpp
-0.7527566874958713: openmw/mwworld/actionteleport.cpp
-0.7491856749386254: openmw/mwmechanics/pathfinding.cpp
+100%|██████████████████████████████| 1386/1386 [00:00<00:00, 3533.53it/s]
+
+87.87%  openmw/mwmechanics/aiwander.cpp
+87.84%  openmw/mwmechanics/aipackage.cpp
+86.94%  navmeshtool/navmesh.cpp
+86.89%  openmw/mwmechanics/pathfinding.cpp
+86.00%  openmw/mwmechanics/aiwander.hpp
+85.86%  openmw/mwmechanics/aipursue.cpp
+85.82%  openmw/mwmechanics/aicombat.cpp
+85.70%  navmeshtool/main.cpp
+85.64%  openmw/mwmechanics/aitravel.cpp
+85.60%  openmw/mwworld/worldimp.cpp
 ```
 
-#### Zip File Download
+#### Zip File Download + Embedding with OpenAI
 
-*Downloading the latest state of the Borg Backup repository from GitHub, generating embeddings, then querying it.*
+*Downloading the latest state of the Borg Backup repository from GitHub, generating embeddings using OpenAI Embeddings, then querying it.*
 
 ```bash
-$ repo_search generate borg https://github.com/borgbackup/borg/archive/refs/heads/master.zip --verbose
+$ repo_search generate borg https://github.com/borgbackup/borg/archive/refs/heads/master.zip --model_type openai
 Loading libraries...
 Downloading https://github.com/borgbackup/borg/archive/refs/heads/master.zip...
 Generating embeddings from zipfile for borg...
-WARNING: Could not read as text file: borg-master/docs/_static/favicon.ico
-WARNING: Could not read as text file: borg-master/docs/_static/logo.pdf
-WARNING: Could not read as text file: borg-master/docs/_static/logo.png
-WARNING: Could not read as text file: borg-master/docs/internals/compaction.odg
-WARNING: Could not read as text file: borg-master/docs/internals/compaction.png
-...
-100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 425/425 [02:17<00:00,  3.09it/s]
+100%|██████████████████████████████| 425/425 [02:17<00:00,  3.09it/s]
 
-$ repo_search query borg "Code implementing file chunking and deduplication."
+$ repo_search query borg "Code implementing file chunking and deduplication." --model_type openai
 Loading libraries...
 Querying embeddings...
-100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 425/425 [00:00<00:00, 3524.80it/s]
-0.7795432405745771: borg-master/scripts/fuzz-cache-sync/testcase_dir/test_simple
-0.776652925136563: borg-master/src/borg/chunker.pyx
-0.7625068003811171: borg-master/docs/usage/notes.rst
-0.7601486530920606: borg-master/docs/misc/internals-picture.txt
-0.7592314451132307: borg-master/src/borg/hashindex.pyi
-0.7587992123424291: borg-master/src/borg/chunker.pyi
-0.7545961178472722: borg-master/src/borg/testsuite/chunker.py
-0.748955970602009: borg-master/src/borg/_chunker.c
-0.7468354876619363: borg-master/src/borg/cache.py
-0.7418049390391546: borg-master/src/borg/_hashindex.c
+100%|██████████████████████████████| 425/425 [00:00<00:00, 3524.80it/s]
+
+77.95%: borg-master/scripts/fuzz-cache-sync/testcase_dir/test_simple
+77.66%: borg-master/src/borg/chunker.pyx
+76.25%: borg-master/docs/usage/notes.rst
+76.01%: borg-master/docs/misc/internals-picture.txt
+75.92%: borg-master/src/borg/hashindex.pyi
+75.87%: borg-master/src/borg/chunker.pyi
+75.45%: borg-master/src/borg/testsuite/chunker.py
+74.89%: borg-master/src/borg/_chunker.c
+74.68%: borg-master/src/borg/cache.py
+74.18%: borg-master/src/borg/_hashindex.c
 ```
 
 ### Dataset Schema
