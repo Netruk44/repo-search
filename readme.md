@@ -163,7 +163,7 @@ The generated dataset consists of just two columns.
 > 
 > `export OPENAI_API_KEY=sk-...`
 > 
->>  **Warning**: **DO NOT** use this model with any sensitive code/data! The contents of all files will be sent to OpenAI's API for embedding generation.
+>>  **Warning**: You should not use this model with any extremely sensitive code or data! The contents of all files will be sent to OpenAI's API for embedding generation.
 >
 > **`--model_name`**: 
 > | Model Name | Description |
