@@ -150,8 +150,8 @@ The generated dataset consists of just two columns.
 > **`--model_name`**:
 > | Model Name | Description |
 > | ------------ | ----------- |
-> | `hkunlp/instructor-large` | The default model. |
-> | `hkunlp/instructor-xl` | A larger version of the default model. |
+> | `hkunlp/instructor-large` | The default model. Requires ~2.5 GB of VRAM to run. |
+> | `hkunlp/instructor-xl` | A larger version of the default model. Estimated to need ~8 GB of VRAM. (Pending testing) |
 
 ---
 
