@@ -121,7 +121,7 @@ def query_embeddings(
         if min_location == max_location:
             estimated_location.append(f'{min_location:.0f}%')
         else:
-            estimated_location.append(f'{min_location:0f}%-{max_location:.0f}%')
+            estimated_location.append(f'{min_location:.0f}%-{max_location:.0f}%')
 
     # Return the results
     return similarities, estimated_location, dataset['file_path']
