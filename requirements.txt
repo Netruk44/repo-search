@@ -1,5 +1,0 @@
-openai
-click
-datasets
-tqdm
-tiktoken
