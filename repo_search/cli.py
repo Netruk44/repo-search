@@ -55,6 +55,13 @@ def query(
 
     show_func = show_str_to_function(show)
 
+    # Make some space between the progress output and the results.
+    print()
+    print()
+    print()
+    print(f'"{query}"')
+    print()
+
     for similarity, estimated_location, file_path in show_func(*query_embeddings(dataset_name, query, embeddings_dir, model_type, model_name, verbose)):
         similarity *= 100
         print(f'{similarity:.2f}% match\t{file_path} [{estimated_location} of the way through]')
