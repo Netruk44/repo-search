@@ -91,6 +91,7 @@ def query_embeddings(
     print('Querying embeddings...')
     #embeddings = dataset['embeddings']
     similarities = []
+    estimated_location = []
 
     #for all_embeddings_for_document in tqdm.tqdm(embeddings):
     for row in tqdm.tqdm(dataset):
@@ -99,14 +100,31 @@ def query_embeddings(
         # Each file may have more than one embedding
         # Check them all to see which one is most similar to the query
         best_similarity = 0.0
-        for embedding in all_embeddings_for_document:
+        best_similarity_index = -1
+
+        for index, embedding in enumerate(all_embeddings_for_document):
             similarity = cosine_similarity(query_embedding, embedding)
             if similarity > best_similarity:
                 best_similarity = similarity
+                best_similarity_index = index
+
         similarities.append(best_similarity)
+        
+        # Calculate the estimated location of the query in the file
+        percentage_through_file = best_similarity_index / len(all_embeddings_for_document)
+        min_location = percentage_through_file
+        max_location = percentage_through_file + (1 / len(all_embeddings_for_document))
+
+        min_location = round(min_location, 0)
+        max_location = round(max_location, 0)
+
+        if min_location == max_location:
+            estimated_location.append(f'{min_location}%')
+        else:
+            estimated_location.append(f'{min_location}%-{max_location}%')
 
     # Return the results
-    return similarities, dataset['file_path']
+    return similarities, estimated_location, dataset['file_path']
 
 
 # Internal functions

@@ -55,9 +55,9 @@ def query(
 
     show_func = show_str_to_function(show)
 
-    for similarity, file_path in show_func(*query_embeddings(dataset_name, query, embeddings_dir, model_type, model_name, verbose)):
+    for similarity, estimated_location, file_path in show_func(*query_embeddings(dataset_name, query, embeddings_dir, model_type, model_name, verbose)):
         similarity *= 100
-        print(f'{similarity:.2f}%\t{file_path}')
+        print(f'{similarity:.2f}%\t{estimated_location}')
 
 
 def get_default_embeddings_dir():
