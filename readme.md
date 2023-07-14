@@ -9,17 +9,18 @@ Current options for model are:
 
 ### Install
 
+#### Install Steps
+1. Open a terminal.
+2. *[Optional]* Create a virtual/conda/whatever environment.
+3. *[Optional]* Install [requirements](#requirements) into your environment.
+3. `pip install git+https://github.com/Netruk44/repo-search`
+4. `repo_search --help`
+
 #### Requirements
 Pip should install missing requirements automatically. Though you may want to install the following ahead of time to speed up the process:
 * [PyTorch](https://pytorch.org/)
 * [sentence-transformers](https://pypi.org/project/sentence-transformers/)
 * [HuggingFace Datasets](https://huggingface.co/docs/datasets/installation)
-
-#### Install Steps
-1. Open a terminal.
-2. *[Optional]* Create a virtual/conda/whatever environment.
-3. `pip install git+https://github.com/Netruk44/repo-search`
-4. `repo_search --help`
 
 ### Arguments
 
