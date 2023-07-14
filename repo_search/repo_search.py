@@ -79,19 +79,23 @@ def query_embeddings(
     print("Loading model...")
     embedding_model = create_embedding_model(model_type, model_name)
     
-    print('Querying embeddings...')
     query_embedding = embedding_model.generate_embedding_for_query(query, verbose)
 
     # Load the dataset from disk.
+    print("Loading dataset...")
     dataset = datasets.load_from_disk(os.path.join(embeddings_dir, dataset_name))
 
     # Load the index from disk.
     # TODO
 
-    embeddings = dataset['embeddings']
+    print('Querying embeddings...')
+    #embeddings = dataset['embeddings']
     similarities = []
 
-    for all_embeddings_for_document in tqdm.tqdm(embeddings):
+    #for all_embeddings_for_document in tqdm.tqdm(embeddings):
+    for row in tqdm.tqdm(dataset):
+        all_embeddings_for_document = row['embeddings']
+
         # Each file may have more than one embedding
         # Check them all to see which one is most similar to the query
         best_similarity = 0.0
