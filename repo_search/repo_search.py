@@ -218,29 +218,26 @@ def generate_embeddings_for_zipfile(
     file_list = zipfile.namelist()
 
     # For each file in the zip file, generate embeddings for it.
-    all_embeddings = []
-    bar = tqdm.tqdm(file_list, smoothing=0)
-    for file_path in bar:
-        bar.set_description(file_path)
-        try:
-            with zipfile.open(file_path, 'r') as file:
-                file_contents = file.read()
-                file_contents = file_contents.decode('utf-8')
-                all_embeddings.append(generate_embeddings_for_contents(file_contents, embedding_model, verbose))
-        except UnicodeDecodeError as e:
-            if verbose:
-                print(f'WARNING: Could not read as text file: {file_path}')
-            all_embeddings.append([])
-        #except:
-        #    if verbose:
-        #        print(f'WARNING: Issue generating embeddings for: {file_path}')
-        #    all_embeddings.append([])
-    
-    # Generate a dataset from the embeddings.
-    dataset = datasets.Dataset.from_dict({
-        'file_path': file_list,
-        'embeddings': all_embeddings
-    })
+    def generate_data():
+        bar = tqdm.tqdm(file_list, smoothing=0)
+        for file_path in bar:
+            bar.set_description(file_path)
+            try:
+                with zipfile.open(file_path, 'r') as file:
+                    file_contents = file.read()
+                    file_contents = file_contents.decode('utf-8')
+                    embedding = generate_embeddings_for_contents(file_contents, embedding_model, verbose)
+                    yield {'file_path': file_path, 'embeddings': embedding}
+            except UnicodeDecodeError as e:
+                if verbose:
+                    print(f'WARNING: Could not read as text file: {file_path}')
+                yield {'file_path': file_path, 'embeddings': []}
+            #except:
+            #    if verbose:
+            #        print(f'WARNING: Issue generating embeddings for: {file_path}')
+            #    yield {'file_path': file_path, 'embeddings': []}
+
+    dataset = datasets.Dataset.from_generator(generate_data)
 
     # Save the dataset to disk.
     dataset.save_to_disk(os.path.join(embeddings_dir, dataset_name))
@@ -285,26 +282,19 @@ def generate_embeddings_for_local_repository(
             file_paths.append(relative_file_path)
     
     # Generate embeddings for each file in file_paths.
-    bar = tqdm.tqdm(file_paths, smoothing=0)
-    for file_path in bar:
-        full_file_path = os.path.join(repo_path, file_path)
-        bar.set_description(file_path)
+    def generate_data():
+        bar = tqdm.tqdm(file_paths, smoothing=0)
+        for file_path in bar:
+            bar.set_description(file_path)
+            full_file_path = os.path.join(repo_path, file_path)
+            
+            with open(full_file_path, 'rt') as file:
+                file_contents = file.read()
+                embedding = generate_embeddings_for_contents(file_contents, embedding_model, verbose)
+                yield {'file_path': file_path, 'embeddings': embedding}
 
-        #try:
-        with open(full_file_path, 'rt') as file:
-            file_contents = file.read()
-            embedding = generate_embeddings_for_contents(file_contents, embedding_model, verbose)
-            embeddings.append(embedding)
-        #except:
-        #    if verbose:
-        #        print(f'WARNING: Issue generating embeddings for: {full_file_path}')
-        #    embeddings.append([])
-    
     # Generate a dataset from the embeddings.
-    dataset = datasets.Dataset.from_dict({
-        'file_path': file_paths,
-        'embeddings': embeddings
-    })
+    dataset = datasets.Dataset.from_generator(generate_data)
 
     # Save the dataset to disk.
     dataset.save_to_disk(os.path.join(embeddings_dir, dataset_name))
