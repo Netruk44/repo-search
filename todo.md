@@ -5,3 +5,5 @@ Update command
     - if hash on disk != hash in dataset, update the embedding
     - if file not on disk, remove from dataset
  - For every file in folder, if not in dataset, add it
+
+FAISS integration
