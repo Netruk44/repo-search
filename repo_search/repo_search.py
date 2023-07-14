@@ -219,7 +219,7 @@ def generate_embeddings_for_zipfile(
 
     # For each file in the zip file, generate embeddings for it.
     all_embeddings = []
-    bar = tqdm.tqdm(file_list, smoothing=0.05)
+    bar = tqdm.tqdm(file_list, smoothing=0)
     for file_path in bar:
         bar.set_description(file_path)
         try:
@@ -285,7 +285,7 @@ def generate_embeddings_for_local_repository(
             file_paths.append(relative_file_path)
     
     # Generate embeddings for each file in file_paths.
-    bar = tqdm.tqdm(file_paths, smoothing=0.05)
+    bar = tqdm.tqdm(file_paths, smoothing=0)
     for file_path in bar:
         full_file_path = os.path.join(repo_path, file_path)
         bar.set_description(file_path)
