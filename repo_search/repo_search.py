@@ -288,7 +288,7 @@ def generate_embeddings_for_local_repository(
     bar = tqdm.tqdm(file_paths, smoothing=0.05)
     for file_path in bar:
         full_file_path = os.path.join(repo_path, file_path)
-        bar.set_description(full_file_path)
+        bar.set_description(file_path)
 
         #try:
         with open(full_file_path, 'rt') as file:
