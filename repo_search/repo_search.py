@@ -25,7 +25,7 @@ def generate_embeddings_for_repository(
     repo_url_or_path,
     embeddings_dir,
     model_type = 'instructor',
-    model_name = 'hkunlp/instructor-large',
+    model_name = None,
     verbose = False):
     if dataset_exists(dataset_name, embeddings_dir):
         # To help the user, give the full disk path to the embeddings directory
@@ -67,7 +67,7 @@ def query_embeddings(
     query,
     embeddings_dir,
     model_type = 'instructor',
-    model_name = 'hkunlp/instructor-large',
+    model_name = None,
     verbose = False):
     if not dataset_exists(dataset_name, embeddings_dir):
         # To help the user, give the full disk path to the embeddings directory
