@@ -115,8 +115,8 @@ def query_embeddings(
         min_location = percentage_through_file
         max_location = percentage_through_file + (1 / len(all_embeddings_for_document))
 
-        min_location = round(min_location, 0)
-        max_location = round(max_location, 0)
+        min_location = round(min_location * 100.0, 0)
+        max_location = round(max_location * 100.0, 0)
 
         if min_location == max_location:
             estimated_location.append(f'{min_location}%')
