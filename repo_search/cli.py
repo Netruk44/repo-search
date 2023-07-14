@@ -69,10 +69,10 @@ def get_default_embeddings_dir():
 # Order and slice function generators.
 # These functions return a function that will be used to order and slice the complete result list.
 def show_n(n, reverse = False):
-    return lambda similarities, file_paths: sorted(zip(similarities, file_paths), reverse = reverse)[:n]
+    return lambda similarities, estimated_location, file_paths: sorted(zip(similarities, estimated_location, file_paths), reverse = reverse)[:n]
 
 def show_n_percent(n, reverse = False):
-    return lambda similarities, file_paths: sorted(zip(similarities, file_paths), reverse = reverse)[:int(len(similarities) * n / 100)]
+    return lambda similarities, estimated_location, file_paths: sorted(zip(similarities, estimated_location, file_paths), reverse = reverse)[:int(len(similarities) * n / 100)]
 
 def show_str_to_function(show_str):
     # t10 -> show_top_n(10)
