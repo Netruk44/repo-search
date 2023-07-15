@@ -22,12 +22,12 @@ supported_remote_repositories = {
 
 # Exported functions
 def generate_embeddings_for_repository(
-    dataset_name,
-    repo_url_or_path,
-    embeddings_dir,
-    model_type = 'instructor',
-    model_name = None,
-    verbose = False):
+        dataset_name,
+        repo_url_or_path,
+        embeddings_dir,
+        model_type = 'instructor',
+        model_name = None,
+        verbose = False):
     if dataset_exists(dataset_name, embeddings_dir):
         # To help the user, give the full disk path to the embeddings directory
         embeddings_dir_expanded = os.path.abspath(embeddings_dir)
@@ -64,12 +64,12 @@ def generate_embeddings_for_repository(
 
 
 def query_embeddings(
-    dataset_name,
-    query,
-    embeddings_dir,
-    model_type = 'instructor',
-    model_name = None,
-    verbose = False):
+        dataset_name,
+        query,
+        embeddings_dir,
+        model_type = 'instructor',
+        model_name = None,
+        verbose = False):
     if not dataset_exists(dataset_name, embeddings_dir):
         # To help the user, give the full disk path to the embeddings directory
         embeddings_dir_expanded = os.path.abspath(embeddings_dir)
@@ -164,11 +164,11 @@ def get_download_url_for_remote_repository(repo_url):
 
 ## Generator functions
 def generate_embeddings_for_remote_repository_archive(
-    dataset_name,
-    repo_url,
-    embeddings_dir,
-    embedding_model,
-    verbose):
+        dataset_name,
+        repo_url,
+        embeddings_dir,
+        embedding_model,
+        verbose):
     assert is_supported_remote_repository(repo_url)
 
     for supported_url in supported_remote_repositories:
@@ -192,11 +192,11 @@ def generate_embeddings_for_remote_repository_archive(
 
 
 def generate_embeddings_for_remote_zip_archive(
-    dataset_name,
-    zip_url,
-    embeddings_dir,
-    embedding_model,
-    verbose):
+        dataset_name,
+        zip_url,
+        embeddings_dir,
+        embedding_model,
+        verbose):
     # Use zipfile to browse the contents of the zip file without extracting it.
     with BytesIO() as zip_buffer:
         print(f'Downloading {zip_url}...')
@@ -215,11 +215,11 @@ def generate_embeddings_for_remote_zip_archive(
             )
 
 def generate_embeddings_for_local_zip_archive(
-    dataset_name,
-    zip_path,
-    embeddings_dir,
-    embedding_model,
-    verbose):
+        dataset_name,
+        zip_path,
+        embeddings_dir,
+        embedding_model,
+        verbose):
     print(f'Loading {zip_path}...')
     
     # Use zipfile to browse the contents of the zip file without extracting it.
@@ -233,12 +233,11 @@ def generate_embeddings_for_local_zip_archive(
         )
 
 def generate_embeddings_for_zipfile(
-    dataset_name,
-    zipfile,
-    embeddings_dir,
-    embedding_model,
-    verbose):
-
+        dataset_name,
+        zipfile,
+        embeddings_dir,
+        embedding_model,
+        verbose):
     if verbose:
         print(f'Generating embeddings from zipfile for {dataset_name}...')
     
@@ -287,12 +286,11 @@ def generate_embeddings_for_zipfile(
 
 
 def generate_embeddings_for_local_repository(
-    dataset_name,
-    repo_path,
-    embeddings_dir,
-    embedding_model,
-    verbose):
-
+        dataset_name,
+        repo_path,
+        embeddings_dir,
+        embedding_model,
+        verbose):
     if verbose:
         print(f'Generating embeddings from local directory {repo_path} for {dataset_name}...')
 
@@ -361,10 +359,9 @@ def generate_embeddings_for_local_repository(
     generate_faiss_index_for_dataset(dataset, dataset_name, embeddings_dir, verbose)
 
 def generate_embeddings_for_contents(
-    file_contents,
-    embedding_model,
-    verbose
-):
+        file_contents,
+        embedding_model,
+        verbose):
     # Use tiktoken to split file_contents into chunks of OPENAI_MODEL_MAX_INPUT_TOKENS.
     tokens = embedding_model.tokenize(file_contents)
     max_chunk_length = embedding_model.get_max_document_chunk_length()
@@ -385,15 +382,15 @@ def generate_embeddings_for_contents(
     return all_embeddings
 
 def generate_faiss_index_for_dataset(
-    dataset,
-    dataset_name,
-    embeddings_dir,
-    verbose):
+        dataset,
+        dataset_name,
+        embeddings_dir,
+        verbose):
     pass
 
 def create_metadata_file(
-    dataset_dir,
-    embedding_model):
+        dataset_dir,
+        embedding_model):
     metadata_file_path = os.path.join(dataset_dir, 'metadata.json')
     metadata = {
         'model_type': embedding_model.get_model_type(),
