@@ -294,6 +294,7 @@ def generate_embeddings_for_local_repository(
         shared_root_length += 1
 
     # Populate file_paths with all files in repo_path and its subdirectories.
+    total_size = 0
     for root, dirs, files in os.walk(repo_path):
         for file in files:
             file_path = os.path.join(root, file)
@@ -310,22 +311,28 @@ def generate_embeddings_for_local_repository(
             # When storing file_path, remove shared repo_path prefix.
             relative_file_path = file_path[shared_root_length:]
             file_paths.append(relative_file_path)
+
+            file_size = os.path.getsize(file_path)
+            total_size += file_size
     
     # Generate embeddings for each file in file_paths.
-    bar = tqdm.tqdm(file_paths, smoothing=0)
-    for file_path in bar:
+    bar = tqdm.tqdm(total=total_size)
+
+    for file_path in file_paths:
         full_file_path = os.path.join(repo_path, file_path)
         bar.set_description(file_path)
 
-        #try:
-        with open(full_file_path, 'rt') as file:
-            file_contents = file.read()
-            embedding = generate_embeddings_for_contents(file_contents, embedding_model, verbose)
-            embeddings.append(embedding)
+        try:
+            with open(full_file_path, 'rt') as file:
+                file_contents = file.read()
+                embedding = generate_embeddings_for_contents(file_contents, embedding_model, verbose)
+                embeddings.append(embedding)
         #except:
         #    if verbose:
         #        print(f'WARNING: Issue generating embeddings for: {full_file_path}')
         #    embeddings.append([])
+        finally:
+            bar.update(os.path.getsize(full_file_path))
     
     # Generate a dataset from the embeddings.
     dataset = datasets.Dataset.from_dict({
