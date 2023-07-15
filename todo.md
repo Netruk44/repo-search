@@ -7,3 +7,5 @@ Update command
  - For every file in folder, if not in dataset, add it
 
 FAISS integration
+
+Add some kind of a marker to the dataset that indicates which model type and model name created it so the user doesn't need to specify those on the command line
