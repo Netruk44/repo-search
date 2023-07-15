@@ -1,13 +1,13 @@
 print("Loading libraries...")
-#import faiss
-import tqdm
-import os
-import zipfile
-import urllib.request
 import datasets
-import numpy as np
+#import faiss
 from io import BytesIO
 import json
+import numpy as np
+import os
+import tqdm
+import urllib.request
+import zipfile
 
 from .model_types import OpenAIModel, InstructorModel
 
