@@ -108,7 +108,7 @@ $ repo_search generate borg https://github.com/borgbackup/borg/archive/refs/head
   <output trimmed for brevity>
 100%|██████████████████████████████| 425/425 [02:17<00:00,  3.09it/s]
 
-$ repo_search query borg "Code implementing file chunking and deduplication." --model_type openai
+$ repo_search query borg "Code implementing file chunking and deduplication."
   <output trimmed for brevity>
 100%|██████████████████████████████| 425/425 [00:00<00:00, 3524.80it/s]
 
