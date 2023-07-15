@@ -151,7 +151,7 @@ The generated dataset consists of just two columns.
 > | Model Name | Description |
 > | ------------ | ----------- |
 > | `hkunlp/instructor-large` | The default model. Requires ~2.5 GB of VRAM to run. |
-> | `hkunlp/instructor-xl` | A larger version of the default model. Estimated to need ~8 GB of VRAM. (Pending testing) |
+> | `hkunlp/instructor-xl` | A larger version of the default model. Requires ~6 GB of VRAM. |
 
 ---
 
