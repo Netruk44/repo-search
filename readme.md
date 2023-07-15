@@ -75,30 +75,25 @@ The retrieved embeddings are stored in a [HuggingFace Datasets](https://huggingf
 
 ```bash
 $ repo_search generate openmw ~/Developer/openmw/apps
-Loading libraries...
-Loading model...
-load INSTRUCTOR_Transformer
-max_seq_length  512
-INFO: You may see warnings about sequence length being too long. These can be safely ignored.
-openmw_test_suite/testing_util.hpp:   0%|                              | 1/1386 [00:02<1:01:49,  2.63s/it]
-Token indices sequence length is longer than the specified maximum sequence length for this model (1030 > 512). Running this sequence through the model will result in indexing errors
+  <output trimmed for brevity>
 100%|██████████████████████████████| 1386/1386 [05:53<00:00,  3.92it/s]
 
-$ repo_search query openmw "NPC navigation code and examples on making an NPC navigate towards a specific destination."
-Loading libraries...
-Querying embeddings...
+$ repo_search query openmw "Example of making an NPC navigate towards a specific destination."
+  <output trimmed for brevity>
 100%|██████████████████████████████| 1386/1386 [00:00<00:00, 3533.53it/s]
 
-87.87%  openmw/mwmechanics/aiwander.cpp
-87.84%  openmw/mwmechanics/aipackage.cpp
-86.94%  navmeshtool/navmesh.cpp
-86.89%  openmw/mwmechanics/pathfinding.cpp
-86.00%  openmw/mwmechanics/aiwander.hpp
-85.86%  openmw/mwmechanics/aipursue.cpp
-85.82%  openmw/mwmechanics/aicombat.cpp
-85.70%  navmeshtool/main.cpp
-85.64%  openmw/mwmechanics/aitravel.cpp
-85.60%  openmw/mwworld/worldimp.cpp
+"Example of making an NPC navigate towards a specific destination."
+
+89.55% match    openmw/mwmechanics/aipackage.cpp [25%-31% of the way through]
+88.99% match    openmw/mwmechanics/aiwander.cpp [74%-78% of the way through]
+87.65% match    openmw/mwmechanics/aipursue.cpp [33%-67% of the way through]
+87.42% match    openmw/mwmechanics/aicombat.cpp [33%-38% of the way through]
+87.19% match    openmw/mwmechanics/aitravel.cpp [40%-60% of the way through]
+87.11% match    openmw/mwmechanics/pathfinding.cpp [82%-88% of the way through]
+86.88% match    openmw/mwgui/dialogue.cpp [64%-68% of the way through]
+86.81% match    openmw/mwmechanics/aipackage.hpp [40%-60% of the way through]
+86.63% match    openmw/mwmechanics/aiwander.hpp [60%-80% of the way through]
+86.30% match    openmw/mwmechanics/character.cpp [65%-66% of the way through]
 ```
 
 #### Zip File Download + Embedding with OpenAI
@@ -107,26 +102,25 @@ Querying embeddings...
 
 ```bash
 $ repo_search generate borg https://github.com/borgbackup/borg/archive/refs/heads/master.zip --model_type openai
-Loading libraries...
-Downloading https://github.com/borgbackup/borg/archive/refs/heads/master.zip...
-Generating embeddings from zipfile for borg...
+  <output trimmed for brevity>
 100%|██████████████████████████████| 425/425 [02:17<00:00,  3.09it/s]
 
 $ repo_search query borg "Code implementing file chunking and deduplication." --model_type openai
-Loading libraries...
-Querying embeddings...
+  <output trimmed for brevity>
 100%|██████████████████████████████| 425/425 [00:00<00:00, 3524.80it/s]
 
-77.95%: borg-master/scripts/fuzz-cache-sync/testcase_dir/test_simple
-77.66%: borg-master/src/borg/chunker.pyx
-76.25%: borg-master/docs/usage/notes.rst
-76.01%: borg-master/docs/misc/internals-picture.txt
-75.92%: borg-master/src/borg/hashindex.pyi
-75.87%: borg-master/src/borg/chunker.pyi
-75.45%: borg-master/src/borg/testsuite/chunker.py
-74.89%: borg-master/src/borg/_chunker.c
-74.68%: borg-master/src/borg/cache.py
-74.18%: borg-master/src/borg/_hashindex.c
+"Code implementing file chunking and deduplication."
+
+77.95% match    borg-master/scripts/fuzz-cache-sync/testcase_dir/test_simple [0%-100% of the way through]
+77.67% match    borg-master/src/borg/chunker.pyx [0%-100% of the way through]
+76.25% match    borg-master/docs/usage/notes.rst [0%-100% of the way through]
+76.01% match    borg-master/docs/misc/internals-picture.txt [0%-100% of the way through]
+75.92% match    borg-master/src/borg/hashindex.pyi [0%-100% of the way through]
+75.88% match    borg-master/src/borg/chunker.pyi [0%-100% of the way through]
+75.46% match    borg-master/src/borg/testsuite/chunker.py [0%-100% of the way through]
+74.90% match    borg-master/src/borg/_chunker.c [0%-100% of the way through]
+74.68% match    borg-master/src/borg/cache.py [50%-100% of the way through]
+74.18% match    borg-master/src/borg/_hashindex.c [0%-100% of the way through]
 ```
 
 ### Dataset Schema
