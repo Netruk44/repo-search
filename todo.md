@@ -1,3 +1,5 @@
+# To Do List
+## Up Next / Pending
 Update command
  - i.e. repo_search update openmw ~/Developer/openmw/apps
  - New column in dataset: file_hash - MD5/SHA1/some kind hash of file contents
@@ -8,4 +10,5 @@ Update command
 
 FAISS integration
 
-Add some kind of a marker to the dataset that indicates which model type and model name created it so the user doesn't need to specify those on the command line when querying
+## v0.3.0
+- Add some kind of a marker to the dataset that indicates which model type and model name created it so the user doesn't need to specify those on the command line when querying
