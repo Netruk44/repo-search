@@ -7,6 +7,7 @@ import urllib.request
 import datasets
 import numpy as np
 from io import BytesIO
+import json
 
 from .model_types import OpenAIModel, InstructorModel
 
@@ -275,7 +276,11 @@ def generate_embeddings_for_zipfile(
     })
 
     # Save the dataset to disk.
-    dataset.save_to_disk(os.path.join(embeddings_dir, dataset_name))
+    dataset_path = os.path.join(embeddings_dir, dataset_name)
+    dataset.save_to_disk(dataset_path)
+
+    # Create dataset metadata file.
+    create_metadata_file(dataset_path, embedding_model)
 
     # Generate index using FAISS.
     generate_faiss_index_for_dataset(dataset, dataset_name, embeddings_dir, verbose)
@@ -349,6 +354,9 @@ def generate_embeddings_for_local_repository(
     dataset_dir = os.path.join(embeddings_dir, dataset_name)
     dataset.save_to_disk(dataset_dir)
 
+    # Create dataset metadata file.
+    create_metadata_file(dataset_dir, embedding_model)
+
     # Generate index using FAISS.
     generate_faiss_index_for_dataset(dataset, dataset_name, embeddings_dir, verbose)
 
@@ -382,6 +390,18 @@ def generate_faiss_index_for_dataset(
     embeddings_dir,
     verbose):
     pass
+
+def create_metadata_file(
+    dataset_dir,
+    embedding_model):
+    metadata_file_path = os.path.join(dataset_dir, 'metadata.json')
+    metadata = {
+        'model_type': embedding_model.get_model_type(),
+        'model_name': embedding_model.get_model_name(),
+    }
+
+    with open(metadata_file_path, 'w') as metadata_file:
+        json.dump(metadata, metadata_file)
 
 def cosine_similarity(a, b):
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
