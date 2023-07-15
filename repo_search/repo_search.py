@@ -96,6 +96,10 @@ def query_embeddings(
     #for all_embeddings_for_document in tqdm.tqdm(embeddings):
     for row in tqdm.tqdm(dataset):
         all_embeddings_for_document = row['embeddings']
+        if len(all_embeddings_for_document) == 0:
+            similarities.append(0.0)
+            estimated_location.append('0%')
+            continue
 
         # Each file may have more than one embedding
         # Check them all to see which one is most similar to the query
