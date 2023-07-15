@@ -10,5 +10,6 @@ Update command
 
 FAISS integration
 
-## v0.3.0
+## Completed
+### v0.3.0
 - Add some kind of a marker to the dataset that indicates which model type and model name created it so the user doesn't need to specify those on the command line when querying
