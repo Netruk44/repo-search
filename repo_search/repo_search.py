@@ -93,8 +93,9 @@ def query_embeddings(
     similarities = []
     estimated_location = []
 
-    #for all_embeddings_for_document in tqdm.tqdm(embeddings):
-    for row in tqdm.tqdm(dataset):
+    bar = tqdm.tqdm(dataset)
+    for row in bar:
+        bar.set_postfix(best_match = f'{round(max(similarities, default=0.0) * 100.0, 0)}%')
         all_embeddings_for_document = row['embeddings']
         if len(all_embeddings_for_document) == 0:
             similarities.append(0.0)
