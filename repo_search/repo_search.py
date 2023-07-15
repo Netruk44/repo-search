@@ -244,10 +244,14 @@ def generate_embeddings_for_zipfile(
     
     file_list = zipfile.namelist()
 
+    # Calculate total size of all files in the zip file based on their decompressed size.
+    # file_size - decompressed size | compress_size - compressed size
+    total_size = sum(zipinfo.file_size for zipinfo in zipfile.infolist())
+
     # For each file in the zip file, generate embeddings for it.
     all_embeddings = []
-    bar = tqdm.tqdm(file_list, smoothing=0)
-    for file_path in bar:
+    bar = tqdm.tqdm(total=total_size)
+    for file_path in file_list:
         bar.set_description(file_path)
         try:
             with zipfile.open(file_path, 'r') as file:
@@ -262,6 +266,8 @@ def generate_embeddings_for_zipfile(
         #    if verbose:
         #        print(f'WARNING: Issue generating embeddings for: {file_path}')
         #    all_embeddings.append([])
+        finally:
+            bar.update(zipfile.getinfo(file_path).file_size)
     
     # Generate a dataset from the embeddings.
     dataset = datasets.Dataset.from_dict({
