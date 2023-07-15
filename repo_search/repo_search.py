@@ -197,8 +197,7 @@ def generate_embeddings_for_remote_zip_archive(
     verbose):
     # Use zipfile to browse the contents of the zip file without extracting it.
     with BytesIO() as zip_buffer:
-        if verbose:
-            print(f'Downloading {zip_url}...')
+        print(f'Downloading {zip_url}...')
 
         with urllib.request.urlopen(zip_url) as response:
             zip_buffer.write(response.read())
@@ -219,8 +218,7 @@ def generate_embeddings_for_local_zip_archive(
     embeddings_dir,
     embedding_model,
     verbose):
-    if verbose:
-        print(f'Loading {zip_path}...')
+    print(f'Loading {zip_path}...')
     
     # Use zipfile to browse the contents of the zip file without extracting it.
     with zipfile.ZipFile(zip_path) as zip_ref:
