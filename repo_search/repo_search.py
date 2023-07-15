@@ -67,8 +67,6 @@ def query_embeddings(
         dataset_name,
         query,
         embeddings_dir,
-        model_type = 'instructor',
-        model_name = None,
         verbose = False):
     if not dataset_exists(dataset_name, embeddings_dir):
         # To help the user, give the full disk path to the embeddings directory
@@ -77,14 +75,30 @@ def query_embeddings(
         print(f'Dataset named {dataset_name} does not exist in embeddings directory ({embeddings_dir_expanded}), generate it first.')
         return
     
-    print("Loading model...")
-    embedding_model = create_embedding_model(model_type, model_name)
-    
-    query_embedding = embedding_model.generate_embedding_for_query(query, verbose)
-
     # Load the dataset from disk.
     print("Loading dataset...")
     dataset = datasets.load_from_disk(os.path.join(embeddings_dir, dataset_name))
+
+    # Read the metadata file.
+    metadata_file_path = os.path.join(embeddings_dir, dataset_name, 'metadata.json')
+    if os.path.exists(metadata_file_path):
+        with open(metadata_file_path, 'r') as metadata_file:
+            metadata = json.load(metadata_file)
+    else:
+        print("WARNING: Could not find metadata file, assuming default values (instructor - hkunlp/instructor-large).")
+        metadata = {
+            'model_type': 'instructor',
+            'model_name': 'hkunlp/instructor-large',
+        }
+        print(f"INFO: You can create a metadata file at {metadata_file_path} to specify the model type and model name to use.")
+        print(f"INFO: Example metadata file contents: {json.dumps(metadata, indent=4)}")
+
+
+    # Load the model
+    print("Loading model...")
+    embedding_model = create_embedding_model(metadata['model_type'], metadata['model_name'])
+    
+    query_embedding = embedding_model.generate_embedding_for_query(query, verbose)
 
     # Load the index from disk.
     # TODO

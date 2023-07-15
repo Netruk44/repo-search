@@ -38,21 +38,24 @@ Pip should install missing requirements automatically. Though you may want to in
 
 | Argument | Description |
 | -------- | ----------- |
-| `--model_type` | The type of model to use for generating or querying embeddings. See [Available Model Types](#available-model-types) for more information.<br /><br />**Default**: `instructor` |
-| `--model_name` | The name of the model to use for generating or querying embeddings. Options available depend on model type. |
 | `--embeddings_dir` | The directory to store the generated embeddings in. <br /><br />**Default**: An `embeddings` directory located in the folder RepoSearch was installed to |
 | `--verbose` | Whether or not to print verbose output.<br /><br />**Default**: Off |
 
 ---
 
 #### Generate Arguments
-`repo_search generate <repository_name> <repository_source>`
+`repo_search generate <repository_name> <repository_source> <arguments>`
 
 `repository_source` can be one of:
 * A path to a local directory
 * A path to a local zip file
 * A URL to a zip file to download
 * A URL to a GitHub repository to download (the `main` branch is downloaded)
+
+| Argument | Description |
+| -------- | ----------- |
+| `--model_type` | The type of model to use for generating or querying embeddings. See [Available Model Types](#available-model-types) for more information.<br /><br />**Default**: `instructor` |
+| `--model_name` | The name of the model to use for generating or querying embeddings. Options available depend on model type. |
 
 ---
 

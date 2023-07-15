@@ -34,16 +34,12 @@ def generate(
 @main.command(help = 'Query a dataset using natural language.')
 @click.argument('dataset_name')
 @click.argument('query')
-@click.option('--model_type', '-m', default = 'instructor', help = 'Which model was used to generate the embeddings. Options: instructor, openai. Default: instructor')
-@click.option('--model_name', '-n', default = None, help = 'Which model was used to generate the embeddings. Options available depend on the model type.')
 @click.option('--show', '-s', default = 't10', help = 'Which results to show. Prefix t for top, b for bottom. Suffix with % to show a percentage of results. t10=top 10, b5%=bottom 5%')
 @click.option('--embeddings_dir', '-d', default = None, help = 'Directory containing the embeddings for the dataset.')
 @click.option('--verbose', '-v', is_flag = True, help = 'Print verbose output.')
 def query(
     dataset_name,
     query,
-    model_type,
-    model_name,
     show,
     embeddings_dir,
     verbose):
@@ -56,7 +52,7 @@ def query(
     show_func = show_str_to_function(show)
 
     # Make some space between the progress output and the results.
-    results = show_func(*query_embeddings(dataset_name, query, embeddings_dir, model_type, model_name, verbose))
+    results = show_func(*query_embeddings(dataset_name, query, embeddings_dir, verbose))
 
     print()
     print()
