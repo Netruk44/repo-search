@@ -69,3 +69,10 @@ class OpenAIModel(ModelType):
     
     def detokenize(self, tokens: List[int]) -> str:
         return self.encoder.decode(tokens)
+    
+    @staticmethod
+    def get_model_type() -> str:
+        return 'openai'
+
+    def get_model_name(self) -> str:
+        return self.model_name

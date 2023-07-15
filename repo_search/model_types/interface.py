@@ -25,3 +25,12 @@ class ModelType(ABC):
     @abstractmethod
     def detokenize(self, tokens: List[int]) -> str:
         pass
+
+    @staticmethod
+    @abstractmethod
+    def get_model_type() -> str:
+        pass
+
+    @abstractmethod
+    def get_model_name(self) -> str:
+        pass

@@ -45,3 +45,9 @@ class InstructorModel(ModelType):
     def detokenize(self, tokens: List[int]) -> str:
         return self.model.tokenizer.decode(tokens)
     
+    @staticmethod
+    def get_model_type() -> str:
+        return 'instructor'
+    
+    def get_model_name(self) -> str:
+        return self.model_name

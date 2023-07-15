@@ -134,10 +134,11 @@ def query_embeddings(
 
 # Internal functions
 def create_embedding_model(model_type, model_name):
-    if model_type == 'openai':
-        return OpenAIModel(model_name)
-    elif model_type == 'instructor':
-        return InstructorModel(model_name)
+    known_types = [OpenAIModel, InstructorModel]
+
+    for known_type in known_types:
+        if model_type == known_type.get_model_type():
+            return known_type(model_name)
     else:
         raise ValueError(f'Unsupported model type: {model_type}')
 
@@ -345,7 +346,8 @@ def generate_embeddings_for_local_repository(
     })
 
     # Save the dataset to disk.
-    dataset.save_to_disk(os.path.join(embeddings_dir, dataset_name))
+    dataset_dir = os.path.join(embeddings_dir, dataset_name)
+    dataset.save_to_disk(dataset_dir)
 
     # Generate index using FAISS.
     generate_faiss_index_for_dataset(dataset, dataset_name, embeddings_dir, verbose)
