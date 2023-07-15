@@ -4,7 +4,7 @@
 RepoSearch is a tool for searching through repositories of text and source code using natural language queries, based on embeddings from a custom-specified model.
 
 Current options for model are:
-* [Instructor](https://huggingface.co/hkunlp/instructor-large) for local generation (default, GPU recommended)
+* [Instructor](https://huggingface.co/hkunlp/instructor-large) for local generation (default, GPU recommended but not required)
 * [OpenAI Embeddings](https://platform.openai.com/docs/guides/embeddings) for remote generation
 
 ### Install
