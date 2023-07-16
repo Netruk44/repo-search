@@ -8,6 +8,14 @@ Update command
     - if file not on disk, remove from dataset
  - For every file in folder, if not in dataset, add it
 
+Remove/delete command
+ - i.e. repo_search remove openmw
+ - Remove the dataset and all embeddings for the given repository
+
+List command
+ - i.e. repo_search list
+ - List all repositories that have been indexed
+
 FAISS integration
 
 ## Completed
