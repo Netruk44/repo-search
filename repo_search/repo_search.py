@@ -104,7 +104,6 @@ def query_embeddings(
     # TODO
 
     print('Querying embeddings...')
-    #embeddings = dataset['embeddings']
     similarities = []
     estimated_location = []
 
@@ -211,8 +210,8 @@ def generate_embeddings_for_remote_zip_archive(
         embeddings_dir,
         embedding_model,
         verbose):
-    # Use zipfile to browse the contents of the zip file without extracting it.
     with BytesIO() as zip_buffer:
+        # Download the zip file into a memory buffer, then use zipfile to retrieve the contents.
         print(f'Downloading {zip_url}...')
 
         with urllib.request.urlopen(zip_url) as response:
@@ -257,6 +256,7 @@ def generate_embeddings_for_zipfile(
     
     file_list = zipfile.namelist()
 
+    # Progress bar is based on file size (as a stand-in for number of tokens encoded), not number of files.
     # Calculate total size of all files in the zip file based on their decompressed size.
     # file_size - decompressed size | compress_size - compressed size
     total_size = sum(zipinfo.file_size for zipinfo in zipfile.infolist())
@@ -316,6 +316,7 @@ def generate_embeddings_for_local_repository(
         shared_root_length += 1
 
     # Populate file_paths with all files in repo_path and its subdirectories.
+    # While doing so, calculate the total size of all files in repo_path.
     total_size = 0
     for root, dirs, files in os.walk(repo_path):
         for file in files:
@@ -338,6 +339,7 @@ def generate_embeddings_for_local_repository(
             total_size += file_size
     
     # Generate embeddings for each file in file_paths.
+    # Base progress bar on total size of all files (as a stand-in for number of tokens encoded)
     bar = tqdm.tqdm(total=total_size)
 
     for file_path in file_paths:
@@ -376,13 +378,12 @@ def generate_embeddings_for_contents(
         file_contents,
         embedding_model,
         verbose):
-    # Use tiktoken to split file_contents into chunks of OPENAI_MODEL_MAX_INPUT_TOKENS.
+    # Tokenize the file contents in chunks based on the model's max chunk length
     tokens = embedding_model.tokenize(file_contents)
     max_chunk_length = embedding_model.get_max_document_chunk_length()
-
     should_print = verbose and len(tokens) > max_chunk_length
 
-    # Split tokens into chunks of OPENAI_MODEL_MAX_INPUT_TOKENS.
+    # Split tokens into chunks
     all_embeddings = []
     for chunk_number, i in enumerate(range(0, len(tokens), max_chunk_length)):
 
