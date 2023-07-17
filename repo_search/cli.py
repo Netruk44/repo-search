@@ -1,4 +1,5 @@
 import click
+import logging
 import os
 
 @click.group()
@@ -23,11 +24,13 @@ def generate(
     verbose):
 
     from repo_search import generate_embeddings_for_repository
+    
+    logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
 
     if embeddings_dir is None:
         embeddings_dir = get_default_embeddings_dir()
 
-    generate_embeddings_for_repository(dataset_name, repo_url_or_path, embeddings_dir, model_type, model_name, verbose)
+    generate_embeddings_for_repository(dataset_name, repo_url_or_path, embeddings_dir, model_type, model_name)
 
 # 'query' command, queries a dataset for a given query.
 # Takes in a dataset name and a query string.
@@ -46,13 +49,15 @@ def query(
 
     from repo_search import query_embeddings
 
+    logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
+
     if embeddings_dir is None:
         embeddings_dir = get_default_embeddings_dir()
 
     show_func = show_str_to_function(show)
 
     # Make some space between the progress output and the results.
-    results = show_func(*query_embeddings(dataset_name, query, embeddings_dir, verbose))
+    results = show_func(*query_embeddings(dataset_name, query, embeddings_dir))
 
     print()
     print()
