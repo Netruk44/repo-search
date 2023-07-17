@@ -7,10 +7,11 @@ import logging
 import numpy as np
 import os
 import tqdm
+from typing import List, Optional, Tuple
 import urllib.request
 import zipfile
 
-from .model_types import OpenAIModel, InstructorModel
+from .model_types import OpenAIModel, InstructorModel, ModelType
 
 # Module constants
 
@@ -23,11 +24,27 @@ supported_remote_repositories = {
 
 # Exported functions
 def generate_embeddings_for_repository(
-        dataset_name,
-        repo_url_or_path,
-        embeddings_dir,
-        model_type = 'instructor',
-        model_name = None):
+        dataset_name: str,
+        repo_url_or_path: str,
+        embeddings_dir: str,
+        model_type: str = 'instructor',
+        model_name: Optional[str] = None) -> None:
+    """
+    Generate embeddings for a repository.
+
+    Parameters
+    ----------
+    dataset_name : str
+        A name for the newly generated dataset.
+    repo_url_or_path : str
+        The URL or local path to the repository to generate embeddings for.
+    embeddings_dir : str
+        The directory to save the generated embeddings dataset to. This should be the kept the same when querying the dataset.
+    model_type : str, optional
+        The type of model to use for generating the embeddings. Options: instructor, openai. Default: instructor
+    model_name : str, optional
+        The name of the model to use for generating the embeddings. Options available depend on the model type.
+    """
     if dataset_exists(dataset_name, embeddings_dir):
         # To help the user, give the full disk path to the embeddings directory
         embeddings_dir_expanded = os.path.abspath(embeddings_dir)
@@ -64,15 +81,35 @@ def generate_embeddings_for_repository(
 
 
 def query_embeddings(
-        dataset_name,
-        query,
-        embeddings_dir):
+        dataset_name: str,
+        query: str,
+        embeddings_dir: str) -> Tuple[List[float], List[str], List[str]]:
+    """
+    Query a dataset using natural language.
+
+    Parameters
+    ----------
+    dataset_name : str
+        The name of the dataset to query.
+    query : str
+        The query to search for.
+    embeddings_dir : str
+        The directory containing embedding datasets.
+
+    Returns
+    -------
+    Tuple[List[float], List[str], List[str]]
+        A tuple of (similarities, estimated_location, file_path)
+        similarities - a float between 0.0 and 1.0 representing the similarity of the query to the file. 1.0 is a perfect match.
+        estimated_location - a string representing the estimated location of the query in the file. For example, '50%' means the query is estimated to be halfway through the file.
+        file_path - the path to the file in the dataset.
+    """
     if not dataset_exists(dataset_name, embeddings_dir):
         # To help the user, give the full disk path to the embeddings directory
         embeddings_dir_expanded = os.path.abspath(embeddings_dir)
 
         logging.error(f'Dataset named {dataset_name} does not exist in embeddings directory ({embeddings_dir_expanded}), generate it first.')
-        return
+        raise FileNotFoundError(f'Could not find dataset {dataset_name}.')
     
     # Load the dataset from disk.
     logging.info("Loading dataset...")
@@ -146,7 +183,7 @@ def query_embeddings(
 
 
 # Internal functions
-def create_embedding_model(model_type, model_name):
+def create_embedding_model(model_type: str, model_name: Optional[str]) -> ModelType:
     known_types = [OpenAIModel, InstructorModel]
 
     for known_type in known_types:
@@ -155,31 +192,24 @@ def create_embedding_model(model_type, model_name):
     else:
         raise ValueError(f'Unsupported model type: {model_type}')
 
-def dataset_exists(dataset_name, embeddings_dir):
+def dataset_exists(dataset_name: str, embeddings_dir: str) -> bool:
     # Check if folder named dataset_name exists in embeddings_dir.
     return os.path.exists(os.path.join(embeddings_dir, dataset_name))
 
-def is_supported_remote_repository(repo_url):
+def is_supported_remote_repository(repo_url: str) -> bool:
     # Check if the given repo_url is supported by this script.
     for supported_url in supported_remote_repositories:
         if repo_url.startswith(supported_url):
             return True
     return False
 
-def get_download_url_for_remote_repository(repo_url):
-    # Get the zip file URL for the given remote repository URL.
-    for supported_url in supported_remote_repositories:
-        if repo_url.startswith(supported_url):
-            return repo_url + supported_remote_repositories[supported_url]
-    return None
-
 
 ## Generator functions
 def generate_embeddings_for_remote_repository_archive(
-        dataset_name,
-        repo_url,
-        embeddings_dir,
-        embedding_model):
+        dataset_name: str,
+        repo_url: str,
+        embeddings_dir: str,
+        embedding_model: ModelType) -> None:
     assert is_supported_remote_repository(repo_url)
 
     for supported_url in supported_remote_repositories:
@@ -201,10 +231,10 @@ def generate_embeddings_for_remote_repository_archive(
 
 
 def generate_embeddings_for_remote_zip_archive(
-        dataset_name,
-        zip_url,
-        embeddings_dir,
-        embedding_model):
+        dataset_name: str,
+        zip_url: str,
+        embeddings_dir: str,
+        embedding_model: ModelType) -> None:
     with BytesIO() as zip_buffer:
         # Download the zip file into a memory buffer, then use zipfile to retrieve the contents.
         logging.info(f'Downloading {zip_url}...')
@@ -222,10 +252,10 @@ def generate_embeddings_for_remote_zip_archive(
             )
 
 def generate_embeddings_for_local_zip_archive(
-        dataset_name,
-        zip_path,
-        embeddings_dir,
-        embedding_model):
+        dataset_name: str,
+        zip_path: str,
+        embeddings_dir: str,
+        embedding_model: ModelType) -> None:
     logging.info(f'Loading {zip_path}...')
     
     # Use zipfile to browse the contents of the zip file without extracting it.
@@ -238,10 +268,10 @@ def generate_embeddings_for_local_zip_archive(
         )
 
 def generate_embeddings_for_zipfile(
-        dataset_name,
-        zipfile,
-        embeddings_dir,
-        embedding_model):
+        dataset_name: str,
+        zipfile: zipfile.ZipFile,
+        embeddings_dir: str,
+        embedding_model: ModelType) -> None:
     logging.info(f'Generating embeddings from zipfile for {dataset_name}...')
     
     file_list = zipfile.namelist()
@@ -289,10 +319,10 @@ def generate_embeddings_for_zipfile(
 
 
 def generate_embeddings_for_local_repository(
-        dataset_name,
-        repo_path,
-        embeddings_dir,
-        embedding_model):
+        dataset_name: str,
+        repo_path: str,
+        embeddings_dir: str,
+        embedding_model: ModelType) -> None:
     logging.info(f'Generating embeddings from local directory {repo_path} for {dataset_name}...')
 
     file_paths = []
@@ -361,14 +391,14 @@ def generate_embeddings_for_local_repository(
     generate_faiss_index_for_dataset(dataset, dataset_name, embeddings_dir)
 
 def generate_embeddings_for_contents(
-        file_contents,
-        embedding_model):
+        file_contents: str,
+        embedding_model: ModelType) -> List[List[float]]:
     # Tokenize the file contents in chunks based on the model's max chunk length
     tokens = embedding_model.tokenize(file_contents)
     max_chunk_length = embedding_model.get_max_document_chunk_length()
 
     # Split tokens into chunks
-    all_embeddings = []
+    all_embeddings: List[List[float]] = []
     for chunk_number, i in enumerate(range(0, len(tokens), max_chunk_length)):
 
         chunk = tokens[i:i + max_chunk_length]
@@ -380,14 +410,14 @@ def generate_embeddings_for_contents(
     return all_embeddings
 
 def generate_faiss_index_for_dataset(
-        dataset,
-        dataset_name,
-        embeddings_dir):
+        dataset: datasets.Dataset,
+        dataset_name: str,
+        embeddings_dir: str) -> None:
     pass
 
 def create_metadata_file(
-        dataset_dir,
-        embedding_model):
+        dataset_dir: str,
+        embedding_model: ModelType) -> None:
     metadata_file_path = os.path.join(dataset_dir, 'metadata.json')
     metadata = {
         'model_type': embedding_model.get_model_type(),
@@ -397,5 +427,5 @@ def create_metadata_file(
     with open(metadata_file_path, 'w') as metadata_file:
         json.dump(metadata, metadata_file)
 
-def cosine_similarity(a, b):
+def cosine_similarity(a: List[float], b: List[float]) -> float:
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
