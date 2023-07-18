@@ -7,6 +7,63 @@ Current options for model are:
 * [Instructor](https://huggingface.co/hkunlp/instructor-large) for local generation (default, GPU recommended but not required)
 * [OpenAI Embeddings](https://platform.openai.com/docs/guides/embeddings) for remote generation
 
+
+### Example Usage
+
+#### Local Repository
+*Generating embeddings from a local copy of the OpenMW (open source game engine) repository, then querying it.*
+
+```bash
+$ repo_search generate openmw ~/Developer/openmw/apps
+  <output trimmed for brevity>
+100%|██████████████████████████████| 1386/1386 [05:53<00:00,  3.92it/s]
+
+$ repo_search query openmw "Example of making an NPC navigate towards a specific destination."
+  <output trimmed for brevity>
+100%|██████████████████████████████| 1386/1386 [00:00<00:00, 3533.53it/s]
+
+"Example of making an NPC navigate towards a specific destination."
+
+89.55% match    openmw/mwmechanics/aipackage.cpp [25%-31% of the way through]
+88.99% match    openmw/mwmechanics/aiwander.cpp [74%-78% of the way through]
+87.65% match    openmw/mwmechanics/aipursue.cpp [33%-67% of the way through]
+87.42% match    openmw/mwmechanics/aicombat.cpp [33%-38% of the way through]
+87.19% match    openmw/mwmechanics/aitravel.cpp [40%-60% of the way through]
+87.11% match    openmw/mwmechanics/pathfinding.cpp [82%-88% of the way through]
+86.88% match    openmw/mwgui/dialogue.cpp [64%-68% of the way through]
+86.81% match    openmw/mwmechanics/aipackage.hpp [40%-60% of the way through]
+86.63% match    openmw/mwmechanics/aiwander.hpp [60%-80% of the way through]
+86.30% match    openmw/mwmechanics/character.cpp [65%-66% of the way through]
+```
+
+#### Zip File Download + Embedding with OpenAI
+
+*Downloading the latest state of the Borg Backup repository from GitHub, generating embeddings using OpenAI Embeddings, then querying it.*
+
+```bash
+$ repo_search generate borg https://github.com/borgbackup/borg/archive/refs/heads/master.zip --model_type openai
+  <output trimmed for brevity>
+100%|██████████████████████████████| 425/425 [02:17<00:00,  3.09it/s]
+
+$ repo_search query borg "Code implementing file chunking and deduplication."
+  <output trimmed for brevity>
+100%|██████████████████████████████| 425/425 [00:00<00:00, 3524.80it/s]
+
+"Code implementing file chunking and deduplication."
+
+77.95% match    borg-master/scripts/fuzz-cache-sync/testcase_dir/test_simple [0%-100% of the way through]
+77.67% match    borg-master/src/borg/chunker.pyx [0%-100% of the way through]
+76.25% match    borg-master/docs/usage/notes.rst [0%-100% of the way through]
+76.01% match    borg-master/docs/misc/internals-picture.txt [0%-100% of the way through]
+75.92% match    borg-master/src/borg/hashindex.pyi [0%-100% of the way through]
+75.88% match    borg-master/src/borg/chunker.pyi [0%-100% of the way through]
+75.46% match    borg-master/src/borg/testsuite/chunker.py [0%-100% of the way through]
+74.90% match    borg-master/src/borg/_chunker.c [0%-100% of the way through]
+74.68% match    borg-master/src/borg/cache.py [50%-100% of the way through]
+74.18% match    borg-master/src/borg/_hashindex.c [0%-100% of the way through]
+```
+
+
 ### Install
 
 #### Install Steps
@@ -70,61 +127,6 @@ For each file in the repository, the embeddings are sent to a customizable model
 The retrieved embeddings are stored in a [HuggingFace Datasets](https://huggingface.co/docs/datasets/index) dataset. Check out [the schema](#dataset-schema) for more information about using the generated dataset.
 
 > **Possible TODO**: *The embeddings are indexed using [FAISS](https://faiss.ai/), which allows for fast nearest neighbor searches to your queries.*
-
-### Example Usage
-
-#### Local Repository
-*Generating embeddings from a local copy of the OpenMW (open source game engine) repository, then querying it.*
-
-```bash
-$ repo_search generate openmw ~/Developer/openmw/apps
-  <output trimmed for brevity>
-100%|██████████████████████████████| 1386/1386 [05:53<00:00,  3.92it/s]
-
-$ repo_search query openmw "Example of making an NPC navigate towards a specific destination."
-  <output trimmed for brevity>
-100%|██████████████████████████████| 1386/1386 [00:00<00:00, 3533.53it/s]
-
-"Example of making an NPC navigate towards a specific destination."
-
-89.55% match    openmw/mwmechanics/aipackage.cpp [25%-31% of the way through]
-88.99% match    openmw/mwmechanics/aiwander.cpp [74%-78% of the way through]
-87.65% match    openmw/mwmechanics/aipursue.cpp [33%-67% of the way through]
-87.42% match    openmw/mwmechanics/aicombat.cpp [33%-38% of the way through]
-87.19% match    openmw/mwmechanics/aitravel.cpp [40%-60% of the way through]
-87.11% match    openmw/mwmechanics/pathfinding.cpp [82%-88% of the way through]
-86.88% match    openmw/mwgui/dialogue.cpp [64%-68% of the way through]
-86.81% match    openmw/mwmechanics/aipackage.hpp [40%-60% of the way through]
-86.63% match    openmw/mwmechanics/aiwander.hpp [60%-80% of the way through]
-86.30% match    openmw/mwmechanics/character.cpp [65%-66% of the way through]
-```
-
-#### Zip File Download + Embedding with OpenAI
-
-*Downloading the latest state of the Borg Backup repository from GitHub, generating embeddings using OpenAI Embeddings, then querying it.*
-
-```bash
-$ repo_search generate borg https://github.com/borgbackup/borg/archive/refs/heads/master.zip --model_type openai
-  <output trimmed for brevity>
-100%|██████████████████████████████| 425/425 [02:17<00:00,  3.09it/s]
-
-$ repo_search query borg "Code implementing file chunking and deduplication."
-  <output trimmed for brevity>
-100%|██████████████████████████████| 425/425 [00:00<00:00, 3524.80it/s]
-
-"Code implementing file chunking and deduplication."
-
-77.95% match    borg-master/scripts/fuzz-cache-sync/testcase_dir/test_simple [0%-100% of the way through]
-77.67% match    borg-master/src/borg/chunker.pyx [0%-100% of the way through]
-76.25% match    borg-master/docs/usage/notes.rst [0%-100% of the way through]
-76.01% match    borg-master/docs/misc/internals-picture.txt [0%-100% of the way through]
-75.92% match    borg-master/src/borg/hashindex.pyi [0%-100% of the way through]
-75.88% match    borg-master/src/borg/chunker.pyi [0%-100% of the way through]
-75.46% match    borg-master/src/borg/testsuite/chunker.py [0%-100% of the way through]
-74.90% match    borg-master/src/borg/_chunker.c [0%-100% of the way through]
-74.68% match    borg-master/src/borg/cache.py [50%-100% of the way through]
-74.18% match    borg-master/src/borg/_hashindex.c [0%-100% of the way through]
-```
 
 ### Dataset Schema
 The generated dataset consists of just two columns.
