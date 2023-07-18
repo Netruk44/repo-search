@@ -10,6 +10,9 @@ Current options for model are:
 
 ### Example Usage
 
+#### Demo
+[![demo](https://asciinema.org/a/CtzHuKGVukt70MJl1B7RYM1JZ.svg)](https://asciinema.org/a/CtzHuKGVukt70MJl1B7RYM1JZ?autoplay=1)
+
 #### Local Repository
 *Generating embeddings from a local copy of the [OpenMW](https://gitlab.com/OpenMW/openmw) (open source game engine) repository, then querying it.*
 
