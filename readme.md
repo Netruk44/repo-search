@@ -11,7 +11,7 @@ Current options for model are:
 ### Example Usage
 
 #### Local Repository
-*Generating embeddings from a local copy of the OpenMW (open source game engine) repository, then querying it.*
+*Generating embeddings from a local copy of the [OpenMW](https://gitlab.com/OpenMW/openmw) (open source game engine) repository, then querying it.*
 
 ```bash
 $ repo_search generate openmw ~/Developer/openmw/apps
@@ -38,9 +38,10 @@ $ repo_search query openmw "Example of making an NPC navigate towards a specific
 
 #### Zip File Download + Embedding with OpenAI
 
-*Downloading the latest state of the Borg Backup repository from GitHub, generating embeddings using OpenAI Embeddings, then querying it.*
+*Downloading the latest state of the [Borg Backup](https://github.com/borgbackup/borg) repository from GitHub, generating embeddings using OpenAI Embeddings, then querying it.*
 
 ```bash
+$ export OPENAI_API_KEY=sk-...
 $ repo_search generate borg https://github.com/borgbackup/borg/archive/refs/heads/master.zip --model_type openai
   <output trimmed for brevity>
 100%|██████████████████████████████| 425/425 [02:17<00:00,  3.09it/s]
