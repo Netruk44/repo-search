@@ -1,3 +1,4 @@
+import logging
 from typing import List, Optional
 
 from InstructorEmbedding import INSTRUCTOR
@@ -12,6 +13,7 @@ class InstructorModel(ModelType):
             retrieval_instruction: Optional[str] = None):
         
         self.model_name = model_name if model_name is not None else 'hkunlp/instructor-large'
+        logging.debug(f'Loading Instructor model {self.model_name}')
         self.model = INSTRUCTOR(self.model_name)
 
         default_embedding_instruction = 'Represent the code document for retrieval: '
@@ -20,7 +22,7 @@ class InstructorModel(ModelType):
         default_retrieval_instruction = 'Represent the code search query for retrieving code documents matching the query: '
         self.retrieval_instruction = retrieval_instruction if retrieval_instruction is not None else default_retrieval_instruction
 
-        print("INFO: You may see warnings about sequence length being too long. These can be safely ignored.")
+        logging.info("You may see warnings about sequence length being too long. These can be safely ignored.")
     
     def generate_embedding_for_document(self, chunk: str, verbose: bool = False) -> List[float]:
         return self.generate_embedding_with_instruction([[self.embedding_instruction, chunk]], verbose)
