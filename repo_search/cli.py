@@ -6,6 +6,12 @@ import os
 def main():
     pass
 
+
+COLOR_DARK_GREY = "\x1b[38;5;240m"
+COLOR_BOLD = "\x1b[1m"
+COLOR_RESET = "\x1b[0m"
+LOGGING_FORMAT = COLOR_DARK_GREY + '[%(asctime)s - %(name)s]' + COLOR_RESET + COLOR_BOLD + ' %(levelname)s:' + COLOR_RESET + ' %(message)s'
+
 # 'generate' command, generates a new embeddings dataset.
 # Takes in a dataset name and a URL to a git repository.
 @main.command(help = 'Generate a new embeddings dataset for a given repository.')
@@ -25,7 +31,7 @@ def generate(
 
     from repo_search import generate_embeddings_for_repository
     
-    logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
+    logging.basicConfig(format=LOGGING_FORMAT, level=logging.DEBUG if verbose else logging.INFO)
 
     if embeddings_dir is None:
         embeddings_dir = get_default_embeddings_dir()
@@ -49,7 +55,7 @@ def query(
 
     from repo_search import query_embeddings
 
-    logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
+    logging.basicConfig(format=LOGGING_FORMAT, level=logging.DEBUG if verbose else logging.INFO)
 
     if embeddings_dir is None:
         embeddings_dir = get_default_embeddings_dir()
